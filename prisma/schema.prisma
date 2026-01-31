@@ -1,0 +1,211 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String?         @unique
+  emailVerified DateTime?
+  password      String?
+  avatar        String?         @default("/profile-light.svg")
+  role          Role            @default(READER)
+  createdAt     DateTime        @default(now())
+  accounts      Account[]
+  sessions      Session[]
+  PasswordReset PasswordReset[]
+  news          News[]
+  newsLikes     NewsLike[]
+  comment       Comment[]
+  commentLikes  CommentLike[]
+  viewLogs      ViewLog[]
+
+  @@index([role])
+}
+
+model News {
+  id              String         @id @default(cuid())
+  title           String         @unique
+  slug            String         @unique
+  content         String         @db.Text
+  excerpt         String?
+  thumbnailUrl    String
+  status          NewsStatus     @default(PUBLISHED)
+  isBreaking      Boolean        @default(false)
+  views           Int            @default(0)
+  source          String?        @db.Text
+  metaTitle       String?
+  metaDescription String?
+  likeCount       Int            @default(0)
+  disLike         Int            @default(0)
+  commentCount    Int            @default(0)
+  publishedAt     DateTime?
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+  authorId        String
+  author          User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  contentImages   ContentImage[]
+  categoryId      String
+  category        Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  newsLikes       NewsLike[]
+  comment         Comment[]
+  viewLogs        ViewLog[]
+
+  @@index([status])
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([publishedAt])
+  @@index([createdAt])
+  @@index([isBreaking])
+}
+
+model ViewLog {
+  id     String @id @default(cuid())
+  userId String
+  newsId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  news News @relation(fields: [newsId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, newsId])
+}
+
+model ContentImage {
+  id        String   @id @default(cuid())
+  url       String
+  caption   String?
+  newsId    String
+  news      News     @relation(fields: [newsId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String?  @unique
+  icon      String?
+  news      News[]
+  createdAt DateTime @default(now()) @map("created_at")
+}
+
+model NewsLike {
+  id        String   @id @default(cuid())
+  userId    String
+  newsId    String
+  isLike    Boolean
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  news News @relation(fields: [newsId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, newsId])
+}
+
+model Comment {
+  id         String    @id @default(cuid())
+  content    String    @db.Text
+  newsId     String
+  userId     String
+  parentId   String?
+  depth      Int       @default(0)
+  likeCount  Int       @default(0)
+  replyCount Int       @default(0)
+  deletedAt  DateTime? @map("deleted_at")
+  isEdited   Boolean   @default(false)
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  news    News          @relation(fields: [newsId], references: [id], onDelete: Cascade)
+  parent  Comment?      @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Restrict)
+  replies Comment[]     @relation("CommentReplies")
+  likes   CommentLike[]
+
+  @@index([newsId])
+  @@index([parentId])
+  @@index([userId])
+  @@index([newsId, createdAt])
+  @@index([newsId, parentId, createdAt])
+}
+
+model CommentLike {
+  id        String   @id @default(cuid())
+  userId    String
+  commentId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, commentId])
+  @@index([commentId])
+  @@index([userId])
+}
+
+model PasswordReset {
+  id      String   @id @default(cuid())
+  token   String   @unique
+  expires DateTime
+  userId  String
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum Role {
+  AUTHOR
+  READER
+}
+
+enum NewsStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
