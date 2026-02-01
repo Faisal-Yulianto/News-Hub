@@ -12,15 +12,23 @@ interface BreakingNewsType {
     name: string;
   };
 }
+
 export interface BreakingResponse {
   data: BreakingNewsType[];
 }
 
-export default function UseBreakingNews() {
+export interface UseBreakingNewsProps {
+  initialData?: BreakingResponse;
+}
+
+export default function UseBreakingNews({
+  initialData,
+}: UseBreakingNewsProps = {}) {
   const { ref, inView } = useInView({
     triggerOnce: true,
     rootMargin: "200px",
   });
+
   const query = useQuery<BreakingResponse>({
     queryKey: ["breaking"],
     queryFn: async () => {
@@ -29,6 +37,9 @@ export default function UseBreakingNews() {
       return res.json();
     },
     enabled: inView,
+    initialData,
+    staleTime: 60000,
   });
+
   return { ...query, ref };
 }

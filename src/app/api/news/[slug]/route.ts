@@ -21,6 +21,12 @@ export async function GET(
           avatar: true,
         },
       },
+      category: {
+        select: {
+          name: true,
+          slug: true,
+        },
+      },
       newsLikes: userId
         ? {
             where: { userId },
@@ -44,6 +50,6 @@ export async function GET(
   return NextResponse.json({
     ...news,
     userReaction,
-    newsLikes: undefined, 
+    newsLikes: undefined,
   });
 }

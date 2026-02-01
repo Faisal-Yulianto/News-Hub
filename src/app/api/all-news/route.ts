@@ -2,19 +2,11 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 
-/* ======================================================
-   CONSTANTS & TYPES
-====================================================== */
-
 const MAX_LIMIT = 20;
 const MAX_PAGE = 100;
 
 type SortKey = "newest" | "oldest" | "views" | "likes" | "comments";
 type SortDirection = "asc" | "desc";
-
-/* ======================================================
-   HELPERS
-====================================================== */
 
 function sanitizeSearch(q: string) {
   const cleaned = q
@@ -46,10 +38,6 @@ function getDateRange(timeRange: string) {
   return { start, now };
 }
 
-/* ======================================================
-   SORT RESOLUTION
-====================================================== */
-
 function resolveSort(sort?: string): {
   key: SortKey;
   direction: SortDirection;
@@ -76,9 +64,6 @@ function resolveSort(sort?: string): {
   return { key: "newest", direction: "desc" };
 }
 
-/* ======================================================
-   RAW SQL SORT MAP (SEARCH MODE)
-====================================================== */
 
 const SORT_SQL: Record<SortKey, Prisma.Sql> = {
   newest: Prisma.sql`n."publishedAt" DESC`,
@@ -88,9 +73,6 @@ const SORT_SQL: Record<SortKey, Prisma.Sql> = {
   comments: Prisma.sql`n."commentCount" DESC`,
 };
 
-/* ======================================================
-   MAIN HANDLER
-====================================================== */
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -110,27 +92,11 @@ export async function GET(req: Request) {
     MAX_LIMIT
   );
 
-  const offset = (page - 1) * limit;
-  const dateRange = getDateRange(timeRange);
-  const safeQuery = rawQ ? sanitizeSearch(rawQ) : null;
+const offset = (page - 1) * limit;
+const dateRange = getDateRange(timeRange);
+const safeQuery = rawQ ? sanitizeSearch(rawQ) : null;
 
-  /* ======================================================
-     MODE A — BROWSE
-  ====================================================== */
-
-  if (!safeQuery) {
-    const where: Prisma.NewsWhereInput = {
-      status: "PUBLISHED",
-      ...(category && { category: { slug: category } }),
-      ...(dateRange && {
-        publishedAt: {
-          gte: dateRange.start,
-          lte: dateRange.now,
-        },
-      }),
-    };
-
-   function buildOrderBy(
+function buildOrderBy(
   key: SortKey,
   direction: SortDirection
 ): Prisma.NewsOrderByWithRelationInput[] {
@@ -148,8 +114,19 @@ export async function GET(req: Request) {
   }
 }
 
+if (!safeQuery) {
+  const where: Prisma.NewsWhereInput = {
+    status: "PUBLISHED",
+    ...(category && { category: { slug: category } }),
+    ...(dateRange && {
+      publishedAt: {
+        gte: dateRange.start,
+        lte: dateRange.now,
+      },
+    }),
+  };
 
-    const [data, total] = await Promise.all([
+  const [data, total, categoryInfo] = await Promise.all([
       prisma.news.findMany({
         where,
         orderBy: buildOrderBy(sortKey, direction),
@@ -170,6 +147,12 @@ export async function GET(req: Request) {
         },
       }),
       prisma.news.count({ where }),
+      category
+        ? prisma.category.findUnique({
+            where: { slug: category },
+            select: { name: true, slug: true },
+          })
+        : null,
     ]);
 
     const totalPages = Math.ceil(total / limit);
@@ -182,12 +165,10 @@ export async function GET(req: Request) {
       totalPages,
       hasMore: page < totalPages,
       nextPage: page < totalPages ? page + 1 : null,
+      categoryInfo, 
     });
   }
 
-  /* ======================================================
-   MODE B — SEARCH (FIXED)
-====================================================== */
 
   const tsQuery = Prisma.sql`plainto_tsquery('simple', ${safeQuery})`;
 
