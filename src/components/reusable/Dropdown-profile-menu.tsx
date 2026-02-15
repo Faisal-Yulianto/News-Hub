@@ -16,13 +16,13 @@ export default function DropdownProfileMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="border-border-none outline-none ring-0 focus:ring-0 focus:outline-none active:outline-none mr-[-20] lg:mr-0">
-        <div className="bg-black dark:bg-white rounded-full w-[42px] h-[42px] flex items-center justify-center cursor-pointer overflow-hidden">
+        <div className="bg-black dark:bg-white rounded-full w-[42px] h-[42px] flex items-center justify-center cursor-pointer overflow-hidden border-3 dark:border-white border-black">
           <Image
             src={session?.user.avatar || "/newshub.png"}
             alt="User Profile"
             width={35}
             height={35}
-            className="bg-black rounded-full"
+            className="bg-black rounded-full object-cover"
           />
         </div>
       </DropdownMenuTrigger>

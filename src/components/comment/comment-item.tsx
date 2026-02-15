@@ -131,13 +131,13 @@ export function CommentItemDisplay({
         onMouseLeave={() => setIsHovered(false)}
       >
         <div className="flex items-start gap-3">
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 w-[45px] h-[45px] overflow-hidden rounded-full">
             <Image
               src={comment.user.avatar || "/default-avatar.png"}
               alt={comment.user.name || "User"}
               width={40}
               height={40}
-              className="rounded-full object-cover"
+              className="object-cover rounded-full"
             />
           </div>
 
@@ -306,7 +306,7 @@ export function CommentItemDisplay({
           ))}
         </div>
       )}
-       <DeleteCommentModal
+      <DeleteCommentModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDeleteConfirm}
