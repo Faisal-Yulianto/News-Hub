@@ -82,13 +82,13 @@ export function CommentForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-3 ">
       <div className="flex items-start gap-3">
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-10 w-[45px] h-[45px] overflow-hidden rounded-full">
           <Image
             src={session.user.avatar || '/default-avatar.png'}
             alt={session.user.name || 'User'}
-            width={40}
-            height={40}
-            className="rounded-full object-cover"
+            width={45}
+            height={45}
+            className="object-cover "
           />
         </div>
         <div className="flex-1">

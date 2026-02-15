@@ -48,6 +48,7 @@ model User {
   emailVerified DateTime?
   password      String?
   avatar        String?         @default("/profile-light.svg")
+  avatarHash    String?
   role          Role            @default(READER)
   createdAt     DateTime        @default(now())
   accounts      Account[]
@@ -58,6 +59,8 @@ model User {
   comment       Comment[]
   commentLikes  CommentLike[]
   viewLogs      ViewLog[]
+  bookmarks     Bookmark[]
+  history       History[]
 
   @@index([role])
 }
@@ -89,6 +92,8 @@ model News {
   newsLikes       NewsLike[]
   comment         Comment[]
   viewLogs        ViewLog[]
+  bookmarks       Bookmark[]
+  history         History[]
 
   @@index([status])
   @@index([categoryId])
@@ -96,6 +101,36 @@ model News {
   @@index([publishedAt])
   @@index([createdAt])
   @@index([isBreaking])
+}
+
+model Bookmark {
+  id      String   @default(cuid())
+  userId  String
+  newsId  String
+  savedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  news News @relation(fields: [newsId], references: [id])
+
+  @@unique([userId, newsId])
+  @@index([userId])
+  @@index([newsId])
+  @@map("bookmarks")
+}
+
+model History {
+  id           String    @id @default(uuid())
+  userId       String
+  newsId       String
+  lastViewedAt DateTime  @updatedAt
+  createdAt    DateTime  @default(now())
+  deletedAt    DateTime?
+
+  user User @relation(fields: [userId], references: [id])
+  news News @relation(fields: [newsId], references: [id])
+
+  @@unique([userId, newsId])
+  @@index([userId, lastViewedAt])
 }
 
 model ViewLog {
