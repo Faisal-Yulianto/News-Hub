@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser,getClientIp } from "@/lib/auth-helper";
+import { getCurrentUser, getClientIp } from "@/lib/auth-helper";
 import prisma from "@/lib/prisma";
-import {
-  bookmarkToggleLimiter,
-  getRateLimitHeaders,
-} from "@/lib/rate-limit";
+import { bookmarkToggleLimiter, getRateLimitHeaders } from "@/lib/rate-limit";
 
 export async function GET(request: NextRequest) {
   try {
@@ -27,7 +24,11 @@ export async function GET(request: NextRequest) {
       prisma.bookmark.findMany({
         where: { userId: currentUser.id },
         include: {
-          news: true,
+          news: {
+            include: {
+              author: true,
+            },
+          },
         },
         orderBy: {
           savedAt: "desc",
@@ -41,21 +42,29 @@ export async function GET(request: NextRequest) {
     const hasMore = page < totalPages;
 
     return NextResponse.json({
-      success: true,
-      bookmarks,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages,
-        hasMore,
-      },
+      data: bookmarks.map((b) => ({
+        id: b.news.id,
+        title: b.news.title,
+        slug: b.news.slug,
+        excerpt: b.news.excerpt,
+        thumbnailUrl: b.news.thumbnailUrl,
+        publishedAt: b.news.publishedAt,
+        views: b.news.views,
+        author: {
+          name: b.news.author.name ?? "Unknown Author",
+        },
+      })),
+      page,
+      limit,
+      total,
+      hasMore,
+      nextPage: hasMore ? page + 1 : null,
     });
   } catch (error) {
     console.error("GET BOOKMARK ERROR:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -70,9 +79,7 @@ export async function PATCH(request: NextRequest) {
     const rateLimit = await bookmarkToggleLimiter.limit(identifier);
 
     if (!rateLimit.success) {
-      const retryAfter = Math.ceil(
-        (rateLimit.reset - Date.now()) / 1000
-      );
+      const retryAfter = Math.ceil((rateLimit.reset - Date.now()) / 1000);
 
       return NextResponse.json(
         {
@@ -85,7 +92,7 @@ export async function PATCH(request: NextRequest) {
             ...getRateLimitHeaders(rateLimit),
             "Retry-After": retryAfter.toString(),
           },
-        }
+        },
       );
     }
 
@@ -94,7 +101,7 @@ export async function PATCH(request: NextRequest) {
     if (!newsId) {
       return NextResponse.json(
         { error: "newsId is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -140,7 +147,7 @@ export async function PATCH(request: NextRequest) {
     console.error("PATCH BOOKMARK ERROR:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,35 +1,62 @@
+"use client";
+
 import Image from "next/image";
 import { Icon } from "@iconify/react";
+import ChangeName from "@/components/profile/edit-name";
+import EditAvatar from "./edit-avatar";
+import { useUserProfile } from "@/hooks/use-user-profile";
+
+type FieldProps = {
+  icon: string;
+  label: string;
+  value: string;
+};
+
+function ProfileField({ icon, label, value }: FieldProps) {
+  return (
+    <div className="w-full">
+      <div className="flex items-center gap-2 justify-center lg:justify-start">
+        <Icon icon={icon} width={25} height={25} />
+        <h2 className="font-extrabold text-xl">{label}</h2>
+      </div>
+      <p className="mt-2 p-2 bg-gradient-to-r from-white to-gray-900 dark:bg-[linear-gradient(90deg,#000000_0%,#434343_100%)] rounded-md dar:text-black text-center lg:text-left">
+        {value}
+      </p>
+    </div>
+  );
+}
 
 export function AvatarUser() {
+  const { data: user } = useUserProfile();
   return (
-    <section className="bg-black/50 rounded-md p-5 w-[95%] mx-auto flex gap-x-10 items-start lg:flex-row sm:flex-col sm:items-center">
-      <div className="relative w-[230px] h-[230px] flex-shrink-0 rounded-full overflow-hidden ring-5 ring-white lg:mx-5 sm:mx-auto md:m-3">
-        <Image
-          src="/BgGedung.webp"
-          alt="User profile photo"
-          fill
-          sizes="230px"
-          className="object-cover"
-          priority
-        />
+    <section className="bg-white/50 dark:bg-black/50 shadow-lg shadow-black rounded-md p-6 w-[95%] mx-auto flex flex-col lg:flex-row items-center lg:items-start gap-8">
+      <div className="relative w-[230px] h-[230px] shrink-0">
+        <div className="relative w-full h-full rounded-full overflow-hidden ring-5 dark:ring-white">
+          <Image
+            src={user?.avatar || "/newshub.png"}
+            alt="User profile photo"
+            fill
+            sizes="230px"
+            className="object-cover"
+            priority
+          />
+        </div>
+        <EditAvatar />
       </div>
-      <div className="w-[50%] sm:text-center lg:text-start">
-        <div className="flex items-center mt-5 gap-x-2 sm:justify-center lg:justify-start
-        ">
-          <Icon icon="icon-park-solid:edit-name" width={25} height={25} />
-          <h1 className="font-extrabold text-2xl">Nama</h1>
+      <div className="flex-1 space-y-6 text-center lg:text-left">
+        <div className="flex items-center relative">
+          <ProfileField
+            icon="icon-park-solid:edit-name"
+            label="Nama"
+            value={user?.name || "Faisal Yulianto"}
+          />
+          <ChangeName />
         </div>
-        <h2 className="p-2 bg-white/40 my-2 w-full rounded-md text-gray-200">
-          Faisal Yulianto
-        </h2>
-        <div className="flex items-center gap-x-2 sm:justify-center lg:justify-start">
-          <Icon icon="ic:baseline-email" width={25} height={25} />
-          <h1 className="font-extrabold text-2xl">E-Mail</h1>
-        </div>
-        <h2 className="p-2 bg-white/40 my-2 w-full rounded-md text-gray-200">
-          FaisalYulianto26@gmail.com
-        </h2>
+        <ProfileField
+          icon="ic:baseline-email"
+          label="E-Mail"
+          value={user?.email || "faisalyulianto@gmail.com"}
+        />
       </div>
     </section>
   );

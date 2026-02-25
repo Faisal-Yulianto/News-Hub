@@ -5,6 +5,8 @@ import { UploadImageLimiter, getRateLimitHeaders } from "@/lib/rate-limit";
 import { hashBuffer } from "@/lib/hash";
 import { getCurrentUser } from "@/lib/auth-helper";
 import { errorResponse } from "@/lib/api-helper";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 type CloudinaryUploadResult = {
   secure_url: string;
@@ -14,7 +16,7 @@ type CloudinaryUploadResult = {
   format: string;
 };
 
-const MAX_AVATAR_SIZE = 2 * 1024 * 1024; 
+const MAX_AVATAR_SIZE = 2 * 1024 * 1024;
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -27,30 +29,38 @@ export async function PATCH(request: NextRequest) {
     const name = formData.get("name") as string | null;
     const avatar = formData.get("avatar") as File | null;
 
-    if (name && name.trim().length < 2) {
+    if (!name && !avatar) {
       return NextResponse.json(
-        { error: "Nama minimal 2 karakter" },
-        { status: 400 }
+        { error: "Tidak ada data yang diubah" },
+        { status: 400 },
       );
     }
 
-    let avatarUrl: string | undefined;
-    let avatarHash: string | undefined;
+    const updateData: { name?: string; avatar?: string; avatarHash?: string } =
+      {};
+
+    if (name) {
+      if (name.trim().length < 2) {
+        return NextResponse.json(
+          { error: "Nama minimal 2 karakter" },
+          { status: 400 },
+        );
+      }
+
+      updateData.name = name.trim();
+    }
 
     if (avatar) {
       const rateLimitResult = await UploadImageLimiter.limit(currentUser.id);
 
       if (!rateLimitResult.success) {
         const retryAfter = Math.ceil(
-          (rateLimitResult.reset - Date.now()) / 1000
+          (rateLimitResult.reset - Date.now()) / 1000,
         );
 
         return NextResponse.json(
           {
             error: `Too many avatar uploads. Try again in ${retryAfter} seconds.`,
-            retryAfter,
-            limit: rateLimitResult.limit,
-            remaining: rateLimitResult.remaining,
           },
           {
             status: 429,
@@ -58,21 +68,21 @@ export async function PATCH(request: NextRequest) {
               ...getRateLimitHeaders(rateLimitResult),
               "Retry-After": retryAfter.toString(),
             },
-          }
+          },
         );
       }
 
       if (!avatar.type.startsWith("image/")) {
         return NextResponse.json(
           { error: "File harus berupa gambar" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
       if (avatar.size > MAX_AVATAR_SIZE) {
         return NextResponse.json(
           { error: "Ukuran avatar maksimal 2MB" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -83,8 +93,6 @@ export async function PATCH(request: NextRequest) {
         where: { id: currentUser.id },
         select: {
           avatarHash: true,
-          avatar: true,
-          name: true,
         },
       });
 
@@ -92,10 +100,6 @@ export async function PATCH(request: NextRequest) {
         return NextResponse.json({
           success: true,
           message: "Avatar tidak berubah",
-          user: {
-            name: existingUser.name,
-            avatar: existingUser.avatar,
-          },
         });
       }
 
@@ -116,36 +120,24 @@ export async function PATCH(request: NextRequest) {
               (error, result) => {
                 if (error || !result?.secure_url) {
                   return reject(
-                    error ?? new Error("Invalid Cloudinary response")
+                    error ?? new Error("Invalid Cloudinary response"),
                   );
                 }
 
-                resolve({
-                  secure_url: result.secure_url,
-                  public_id: result.public_id,
-                  width: result.width,
-                  height: result.height,
-                  format: result.format,
-                });
-              }
+                resolve(result as CloudinaryUploadResult);
+              },
             )
             .end(buffer);
-        }
+        },
       );
 
-      avatarUrl = uploadResult.secure_url;
-      avatarHash = hash;
+      updateData.avatar = uploadResult.secure_url;
+      updateData.avatarHash = hash;
     }
 
     const user = await prisma.user.update({
       where: { id: currentUser.id },
-      data: {
-        ...(name && { name: name.trim() }),
-        ...(avatarUrl && {
-          avatar: avatarUrl,
-          avatarHash,
-        }),
-      },
+      data: updateData,
       select: {
         name: true,
         avatar: true,
@@ -162,7 +154,45 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json(
       { error: "Terjadi kesalahan server" },
-      { status: 500 }
+      { status: 500 },
+    );
+  }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        email: session.user.email,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatar: true,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "User tidak ditemukan" },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json({ user });
+  } catch (error) {
+    console.error("GET PROFILE ERROR:", error);
+
+    return NextResponse.json(
+      { error: "Terjadi kesalahan server" },
+      { status: 500 },
     );
   }
 }

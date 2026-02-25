@@ -1,3 +1,5 @@
+"use client";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,15 +12,17 @@ import { Logout } from "../auth/authButton";
 import { useSession } from "next-auth/react";
 import ThemeToggle from "./dark-mode";
 import { Icon } from "@iconify/react";
+import { useUserProfile } from "@/hooks/use-user-profile";
 
 export default function DropdownProfileMenu() {
   const { data: session } = useSession();
+  const { data: user } = useUserProfile();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="border-border-none outline-none ring-0 focus:ring-0 focus:outline-none active:outline-none mr-[-20] lg:mr-0">
         <div className="bg-black dark:bg-white rounded-full w-[42px] h-[42px] flex items-center justify-center cursor-pointer overflow-hidden border-3 dark:border-white border-black">
           <Image
-            src={session?.user.avatar || "/newshub.png"}
+            src={user?.avatar || "/newshub.png"}
             alt="User Profile"
             width={35}
             height={35}
