@@ -5,7 +5,7 @@ import { authOptions } from "@/lib/auth";
 
 export async function GET(
   _req: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: { slug: string } },
 ) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
@@ -33,6 +33,12 @@ export async function GET(
             select: { isLike: true },
           }
         : false,
+      bookmarks: userId
+        ? {
+            where: { userId },
+            select: { id: true },
+          }
+        : false,
       comment: true,
     },
   });
@@ -46,10 +52,13 @@ export async function GET(
   if (news.newsLikes && news.newsLikes.length > 0) {
     userReaction = news.newsLikes[0].isLike ? "like" : "dislike";
   }
+  const isBookmarked =
+    news.bookmarks && news.bookmarks.length > 0 ? true : false;
 
   return NextResponse.json({
     ...news,
     userReaction,
+    isBookmarked,
     newsLikes: undefined,
   });
 }

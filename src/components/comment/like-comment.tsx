@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useLikeComment } from '@/app/service/like-comment-service';
-import { Heart, Loader2 } from 'lucide-react';
+import { Icon } from '@iconify/react';
 
 interface LikeButtonProps {
   commentId: string;
@@ -54,15 +54,15 @@ export function LikeButton({
           disabled:opacity-50 disabled:cursor-not-allowed
           ${isPending ? 'scale-95' : 'hover:scale-105'}
           ${localIsLiked 
-            ? 'text-red-600' 
-            : 'text-gray-600 hover:text-red-600'
+            ? 'text-blue-600' 
+            : 'text-gray-600 hover:text-blue-600'
           }
         `}
       >
         {isPending ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Icon icon="eos-icons:loading" className="h-4 w-4 animate-spin" />
         ) : (
-          <Heart 
+          <Icon icon="mdi:like" 
             className={`h-4 w-4 transition-all ${
               localIsLiked ? 'fill-current' : ''
             }`}

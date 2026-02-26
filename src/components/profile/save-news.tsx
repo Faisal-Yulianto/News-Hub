@@ -8,7 +8,6 @@ import { useMemo } from "react";
 import useAllBookmarksNews from "@/hooks/use-all-bookmarks";
 import useAutoFetchOnScroll from "@/hooks/auto-fetch-scroll";
 import { UseAllBookmarksNewsProps } from "@/hooks/use-all-bookmarks";
-import { SEOPagination } from "../news/all-news-pagination";
 
 export function SaveNewsSection({
   initialData,
@@ -23,12 +22,6 @@ export function SaveNewsSection({
   );
 
   const isEmpty = !isLoading && items.length === 0;
-
-  const totalPages = useMemo(() => {
-    const firstPage = data?.pages?.[0];
-    if (!firstPage) return 1;
-    return Math.ceil(firstPage.total / 20);
-  }, [data?.pages]);
 
   const ref = useAutoFetchOnScroll({
     fetchNextPage,
@@ -57,7 +50,7 @@ export function SaveNewsSection({
 
             {isEmpty && (
               <div className="w-full text-center py-10 text-muted-foreground text-sm">
-                Tidak ada berita yang ditemukan.
+                Tidak ada berita yang tersimpan.
               </div>
             )}
 
@@ -85,11 +78,8 @@ export function SaveNewsSection({
                 ))}
               </div>
             )}
-
             <div ref={ref} style={{ height: 1 }} aria-hidden="true" />
           </div>
-
-          <SEOPagination totalPages={totalPages} currentPage={initialPage} />
         </>
       </div>
     </section>

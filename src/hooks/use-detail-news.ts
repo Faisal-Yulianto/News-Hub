@@ -26,6 +26,8 @@ export interface detailNewsItem {
   publishedAt: string;
   contentImages: ContentImage[];
   author: { name: string; avatar: string };
+  isBookmarked: boolean;
+  
 }
 
 export interface detailNewsProps {
