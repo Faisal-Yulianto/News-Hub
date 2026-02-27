@@ -10,18 +10,33 @@ import { Icon } from "@iconify/react";
 import { useUpdateProfile } from "@/app/service/edit-profile";
 
 export default function EditName() {
-  const { mutate} = useUpdateProfile();
+  const { mutate } = useUpdateProfile();
+
   const [name, setName] = useState("");
+  const [error, setError] = useState("");
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const trimmed = name.trim();
-    if (!trimmed) return;
+    if (trimmed.length < 5) {
+      setError("Nama minimal 5 karakter");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("name", trimmed);
 
     mutate(formData);
+
     setName("");
+    setError("");
+  };
+
+  const handleChange = (value: string) => {
+    setName(value);
+
+    if (error) setError("");
   };
 
   return (
@@ -36,15 +51,21 @@ export default function EditName() {
         </button>
       </PopoverTrigger>
 
-      <PopoverContent align="end" className="w-45 h-10">
-        <form onSubmit={handleSubmit}>
+      <PopoverContent align="end" className="w-56">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-1">
           <input
             type="text"
-            placeholder="Gati nama ..."
+            placeholder="Ganti nama ..."
             value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full py-1 text-sm bottom-3 relative border-none outline-none focus:outline-none focus:ring-0"
+            onChange={(e) => handleChange(e.target.value)}
+            className={`w-full text-sm border-none outline-none focus:ring-0 ${
+              error ? "text-red-500" : ""
+            }`}
           />
+
+          {error && (
+            <p className="text-xs text-red-500">{error}</p>
+          )}
         </form>
       </PopoverContent>
     </Popover>

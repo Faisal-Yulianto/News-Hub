@@ -1,5 +1,6 @@
 import { AvatarUser } from "@/components/profile/avatar-user";
 import { SaveNewsSection } from "@/components/profile/save-news";
+import UserHistory from "@/components/profile/user-history";
 import { Icon } from "@iconify/react";
 import Footer from "@/components/reusable/footer";
 
@@ -16,6 +17,7 @@ export default function Profile() {
           </div>
           <AvatarUser />
           <SaveNewsSection />
+          <UserHistory />
         </div>
       </main>
       <Footer />

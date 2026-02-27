@@ -2,9 +2,10 @@ import Image from "next/image";
 import { extractDomain } from "@/lib/extract-domain";
 import { formatDateTimeWIB } from "@/lib/time-helper";
 import NewsViewTracker from "@/app/service/news-view-tracker";
+import HistoryTracker from "@/app/service/create-history";
 
 export interface NewsDetail {
-  id: number;
+  id: string;
   slug: string;
   title: string;
   content: string;
@@ -20,17 +21,15 @@ export interface NewsDetail {
   }[];
 }
 
-interface HeroSectionProps  {
+interface HeroSectionProps {
   news: NewsDetail;
-};
+}
 
 export default function HeroSection({ news }: HeroSectionProps) {
   return (
     <div className="m-auto">
       <div className="flex flex-col pb-5 gap-y-4">
-        <h1 className="text-3xl font-bold text-center">
-          {news.title}
-        </h1>
+        <h1 className="text-3xl font-bold text-center">{news.title}</h1>
 
         <div className="flex justify-center gap-x-1">
           <p className="text-sm text-gray-500 font-bold dark:text-white">
@@ -65,9 +64,8 @@ export default function HeroSection({ news }: HeroSectionProps) {
           </div>
         ))}
       </div>
-
+      <HistoryTracker newsId={news.id} />
       <NewsViewTracker slug={news.slug} />
     </div>
   );
 }
-
