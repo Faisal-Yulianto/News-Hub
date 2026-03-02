@@ -1,6 +1,8 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Icon } from "@iconify/react";
 
 export type ToggleBookmarkResponse = {
   success: boolean;
@@ -9,7 +11,7 @@ export type ToggleBookmarkResponse = {
 };
 
 export async function toggleBookmark(
-  newsId: string
+  newsId: string,
 ): Promise<ToggleBookmarkResponse> {
   const res = await fetch("/api/bookmarks", {
     method: "PATCH",
@@ -39,6 +41,18 @@ export function useToggleBookmark(slug: string) {
 
       queryClient.invalidateQueries({ queryKey: ["detail-news", slug] });
     },
+    onError: (error: Error) => {
+      if (error?.message === "Unauthorized") {
+        toast(
+          <div className="flex gap-2 items-center">
+            <Icon icon="typcn:warning" width={30} />
+            <span>Silakan login terlebih dahulu untuk berinteraksi</span>
+          </div>,
+        );
+        return;
+      }
+
+      toast("Terjadi kesalahan. Coba lagi.");
+    },
   });
 }
-

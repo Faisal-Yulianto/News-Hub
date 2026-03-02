@@ -51,7 +51,7 @@ export default function DropdownNav({ MoreCategory }: NavbarProps) {
                 >
                   <Icon
                     icon={item.icon || "mdi:folder"}
-                    className="mr-2 shrink-0"
+                    className="mr-2 shrink-0 dark:text-white"
                   />
                   <span className="truncate">{item.name}</span>
                 </Link>

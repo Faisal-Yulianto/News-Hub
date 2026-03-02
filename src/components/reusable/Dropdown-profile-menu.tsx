@@ -55,6 +55,26 @@ export default function DropdownProfileMenu() {
             </div>
           </DropdownMenuItem>
         </Link>
+        {session?.user?.role === "AUTHOR" && (
+          <>
+            <div className="border-t border-gray-700 my-3" />
+            <Link href={"/admin/dashboard"}>
+              <DropdownMenuItem className="cursor-pointer flex justify-end items-center py-1 dark:focus:text-white">
+                <p className="text-[18px] font-semibold px-3">Dashboard</p>
+                <div className="dark:bg-white bg-black rounded-full w-[42px] h-[42px] flex items-center justify-center">
+                  <div className="bg-white dark:bg-black rounded-full w-[35px] h-[35px] items-center flex justify-center">
+                    <Icon
+                      icon="material-symbols:admin-panel-settings-rounded"
+                      width={50}
+                      height={50}
+                      className="dark:text-white text-black"
+                    />
+                  </div>
+                </div>
+              </DropdownMenuItem>
+            </Link>
+          </>
+        )}
         <div className="border-t border-gray-700 my-3" />
         {session ? (
           <DropdownMenuItem className="cursor-pointer flex justify-end items-center py-1">
