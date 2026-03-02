@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
@@ -16,19 +16,30 @@ export default function RouteProgress() {
   const searchParams = useSearchParams();
   const searchParamsString = searchParams.toString();
 
-  const isNavigating = useRef(false);
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const anchor = target.closest("a");
+
+      if (anchor?.href && anchor.target !== "_blank") {
+        const currentUrl = window.location.href;
+        const nextUrl = anchor.href;
+
+        if (currentUrl !== nextUrl) {
+          NProgress.start();
+        }
+      }
+    };
+
+    document.addEventListener("click", handleClick);
+
+    return () => {
+      document.removeEventListener("click", handleClick);
+    };
+  }, []);
 
   useEffect(() => {
-    isNavigating.current = true;
-    NProgress.start();
-
-
-    requestAnimationFrame(() => {
-      if (isNavigating.current) {
-        NProgress.done(true);
-        isNavigating.current = false;
-      }
-    });
+    NProgress.done();
   }, [pathname, searchParamsString]);
 
   return null;

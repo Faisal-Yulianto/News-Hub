@@ -7,6 +7,7 @@ import SessionProviderWrapper from "@/components/provider/sessionProviderWraper"
 import QueryProvider from "@/components/provider/Query-provider";
 import { ThemeProvider } from "next-themes";
 import RouteProgress from "@/components/provider/RoutePregress";
+import ScrollToTopButton from "@/components/reusable/scrol-top-button";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,6 +43,7 @@ export default function RootLayout({
             <SessionProviderWrapper>
               <NavbarWrapper />
               <RouteProgress />
+              <ScrollToTopButton threshold={600}/>
               {children}
               <Toaster />
             </SessionProviderWrapper>

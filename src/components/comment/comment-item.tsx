@@ -131,16 +131,18 @@ export function CommentItemDisplay({
         onMouseLeave={() => setIsHovered(false)}
       >
         <div className="flex items-start gap-3">
-          <div className="flex-shrink-0 w-[45px] h-[45px] overflow-hidden rounded-full">
-            <Image
-              src={comment.user.avatar || "/default-avatar.png"}
-              alt={comment.user.name || "User"}
-              width={40}
-              height={40}
-              className="object-cover rounded-full"
-            />
+          <div className="relative w-[40px] h-[40px] shrink-0">
+            <div className="relative w-full h-full rounded-full overflow-hidden dark:ring-white">
+              <Image
+                src={comment.user.avatar || "/newshub.png"}
+                alt="User profile photo"
+                fill
+                sizes="230px"
+                className="object-cover"
+                priority
+              />
+            </div>
           </div>
-
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-2 mb-1">
               <div className="flex items-center gap-2 text-sm">

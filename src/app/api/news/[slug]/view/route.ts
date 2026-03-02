@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma";
 
 export async function POST(
   req: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
@@ -13,7 +13,7 @@ export async function POST(
   }
 
   const userId = session.user.id;
-  const slug = params.slug;
+  const slug = (await params).slug;
 
   try {
     await prisma.$transaction(async (tx) => {

@@ -14,7 +14,6 @@ type MoreCategoryItem = {
   id: string | number;
   name: string;
   icon: string | null;
-
 };
 
 type NavbarProps = {
@@ -37,23 +36,28 @@ export default function DropdownNav({ MoreCategory }: NavbarProps) {
           />
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="bg-white dark:bg-[#222] dark:text-white min-w-[150px] z-[9999] absolute ">
-        <ScrollArea className="h-50">
-        {MoreCategory.map((item) => (
-          <DropdownMenuItem key={item.id} asChild>
-            <Link
-              href={`/category/${item.name}`}
-              className={`block px-3 py-2 rounded-md text-base font-medium transition ${
-                pathname === `/category/${item.name}`
-                  ? "bg-gray-900 text-white dark:bg-gray-400 dark:text-black"
-                  : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-              }`}
-            >
-              <Icon icon={item.icon || "mdi:folder"} className="inline-block mr-2 dark:text-white"/>
-              <p> {item.name}</p>
-            </Link>
-          </DropdownMenuItem>
-        ))}
+      <DropdownMenuContent className="bg-white dark:bg-[#222] dark:text-white min-w-[320px] z-[9999]">
+        <ScrollArea className="max-h-64">
+          <div className="grid grid-cols-2 gap-1 p-2">
+            {MoreCategory.map((item) => (
+              <DropdownMenuItem key={item.id} asChild>
+                <Link
+                  href={`/category/${item.name}`}
+                  className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition ${
+                    pathname === `/category/${item.name}`
+                      ? "bg-gray-900 text-white dark:bg-gray-400 dark:text-black"
+                      : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                  }`}
+                >
+                  <Icon
+                    icon={item.icon || "mdi:folder"}
+                    className="mr-2 shrink-0"
+                  />
+                  <span className="truncate">{item.name}</span>
+                </Link>
+              </DropdownMenuItem>
+            ))}
+          </div>
         </ScrollArea>
       </DropdownMenuContent>
     </DropdownMenu>

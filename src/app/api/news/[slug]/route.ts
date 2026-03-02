@@ -5,13 +5,14 @@ import { authOptions } from "@/lib/auth";
 
 export async function GET(
   _req: Request,
-  { params }: { params: { slug: string } },
+  { params }: { params: Promise<{ slug: string }> },
 ) {
+  const { slug } = await params;
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
 
   const news = await prisma.news.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
     include: {
       contentImages: true,
       author: {

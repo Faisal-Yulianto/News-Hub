@@ -8,9 +8,10 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import CommentSection from "@/components/comment/comments-section";
 import Footer from "@/components/reusable/footer";
 
-type PageProps = {
-  params: { slug: string };
-};
+
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
 
 async function fetchDetailNews(slug: string) {
   const res = await fetch(
@@ -22,7 +23,8 @@ async function fetchDetailNews(slug: string) {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const data = await fetchDetailNews(params.slug);
+  const { slug } = await params;
+  const data = await fetchDetailNews(slug);
 
   if (!data) {
     return {
@@ -99,7 +101,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function DetailNews({ params }: PageProps) {
-  const DetailNews = params.slug;
+  const { slug } = await params;
+  const DetailNews = slug;
   const [res, RelatedRes] = await Promise.all([
     fetch(`${process.env.NEXTAUTH_URL}/api/news/${DetailNews}`, {
       next: { revalidate: 60 },

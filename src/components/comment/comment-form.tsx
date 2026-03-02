@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { Loader2, Send, X } from 'lucide-react';
-import Image from 'next/image';
-
+import { useState, useRef, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useUserProfile } from "@/hooks/use-user-profile";
+import { Loader2, Send, X } from "lucide-react";
+import Image from "next/image";
 
 interface CommentFormProps {
   newsId: string;
@@ -25,17 +25,19 @@ export function CommentForm({
   onCancel,
   isSubmitting = false,
   autoFocus = false,
-  placeholder = 'Tulis komentar...',
-  submitLabel = 'Kirim',
+  placeholder = "Tulis komentar...",
+  submitLabel = "Kirim",
 }: CommentFormProps) {
   const { data: session } = useSession();
-  const [content, setContent] = useState('');
+  const { data: userProfile } = useUserProfile();
+  const [content, setContent] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height =
+        textareaRef.current.scrollHeight + "px";
     }
   }, [content]);
 
@@ -52,15 +54,15 @@ export function CommentForm({
     if (!trimmedContent || isSubmitting) return;
 
     onSubmit(trimmedContent);
-    setContent('');
+    setContent("");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
       handleSubmit(e as unknown as React.FormEvent);
     }
 
-    if (e.key === 'Escape' && onCancel) {
+    if (e.key === "Escape" && onCancel) {
       onCancel();
     }
   };
@@ -69,11 +71,11 @@ export function CommentForm({
     return (
       <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-center">
         <p className="text-sm text-gray-600">
-          Harap{' '}
+          Harap{" "}
           <button className="text-blue-600 hover:underline font-medium">
             log in terlebih dahulu
-          </button>{' '}
-          untuk {parentId ? 'balas' : 'komentar'}
+          </button>{" "}
+          untuk {parentId ? "balas" : "komentar"}
         </p>
       </div>
     );
@@ -82,14 +84,17 @@ export function CommentForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-3 ">
       <div className="flex items-start gap-3">
-        <div className="flex-shrink-10 w-[45px] h-[45px] overflow-hidden rounded-full">
-          <Image
-            src={session.user.avatar || '/default-avatar.png'}
-            alt={session.user.name || 'User'}
-            width={45}
-            height={45}
-            className="object-cover "
-          />
+        <div className="relative w-[40px] h-[40px] shrink-0">
+          <div className="relative w-full h-full rounded-full overflow-hidden dark:ring-white">
+            <Image
+              src={userProfile?.avatar || "/newshub.png"}
+              alt="User profile photo"
+              fill
+              sizes="230px"
+              className="object-cover"
+              priority
+            />
+          </div>
         </div>
         <div className="flex-1">
           {parentAuthorName && (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export function useUpdateProfile() {
   const queryClient = useQueryClient();
@@ -23,6 +24,10 @@ export function useUpdateProfile() {
 
     onSuccess: (data) => {
       queryClient.setQueryData(["user-profile"], data.user);
+      queryClient.invalidateQueries({
+        queryKey: ["all-comment"],
+      });
+      toast.success("Profile berhasil diperbarui");
     },
   });
 }

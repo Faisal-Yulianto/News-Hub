@@ -7,10 +7,10 @@ import { errorResponse, handleApiEror } from "@/lib/api-helper";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { commentId: string } },
+  { params }: { params: Promise<{ commentId: string }> },
 ) {
   try { 
-    const { commentId } = params;
+    const { commentId } = await params;
     const currentUser = await getCurrentUser();
     if (!currentUser) {
       return errorResponse("Unauthorized", 401, "UNAUTHORIZED");

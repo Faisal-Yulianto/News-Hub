@@ -29,7 +29,7 @@ function ProfileField({ icon, label, value }: FieldProps) {
 export function AvatarUser() {
   const { data: user } = useUserProfile();
   return (
-    <section className="bg-white/50 dark:bg-black/50 shadow-lg shadow-black rounded-md p-6 w-[95%] mx-auto flex flex-col lg:flex-row items-center lg:items-start gap-8">
+    <section className="bg-white/50 dark:bg-black/50 shadow-lg shadow-black rounded-md px-20 py-20 w-[95%] mx-auto flex flex-col lg:flex-row items-center lg:items-start gap-8">
       <div className="relative w-[230px] h-[230px] shrink-0">
         <div className="relative w-full h-full rounded-full overflow-hidden ring-5 dark:ring-white">
           <Image

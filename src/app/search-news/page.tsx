@@ -4,14 +4,14 @@ import { getAllCategory } from "../action/category-action";
 import Footer from "@/components/reusable/footer";
 
 type PageProps = {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     sort?: string;
     timeRange?: string;
     limit?: string;
     category?: string;
     q?: string;
-  };
+  }>;
 };
 
 export type DropdownOption = {
@@ -26,7 +26,7 @@ async function fetchSearchNews(
   sort: string,
   timeRange: string,
   category: string,
-  limit: number
+  limit: number,
 ) {
   const params = new URLSearchParams({
     page: String(page),
@@ -39,7 +39,7 @@ async function fetchSearchNews(
 
   const res = await fetch(
     `${process.env.NEXTAUTH_URL}/api/all-news?${params}`,
-    { next: { revalidate: 60 } }
+    { next: { revalidate: 60 } },
   );
   if (!res.ok) return null;
   return res.json();
@@ -48,9 +48,10 @@ async function fetchSearchNews(
 export async function generateMetadata({
   searchParams,
 }: PageProps): Promise<Metadata> {
-  const query = searchParams.q ?? "";
-  const page = Number(searchParams.page ?? 1);
-  const category = searchParams.category ?? "";
+  const Params = await searchParams;
+  const query = Params.q ?? "";
+  const page = Number(Params.page ?? 1);
+  const category = Params.category ?? "";
 
   if (!query) {
     return {
@@ -63,7 +64,14 @@ export async function generateMetadata({
       },
     };
   }
-  const data = await fetchSearchNews(query, page, "newest", "all", category, 10);
+  const data = await fetchSearchNews(
+    query,
+    page,
+    "newest",
+    "all",
+    category,
+    10,
+  );
   const total = data?.total ?? 0;
 
   const categoryLabel = category ? ` di kategori ${category}` : "";
@@ -123,20 +131,21 @@ export async function generateMetadata({
 }
 
 export default async function SearchPage({ searchParams }: PageProps) {
-  const categoryFilter = await getAllCategory();
-  const categoryOptions: DropdownOption[] = [
-    ...categoryFilter.map((c) => ({
-      value: c.slug ?? "",
-      label: c.name,
-      icon: c.icon ?? "mdi:tag",
-    })),
-  ];
+  const params = await searchParams;
 
-  const page = Number(searchParams.page ?? 1);
-  const sort = searchParams.sort ?? "newest";
-  const category = searchParams.category ?? "";
-  const query = searchParams.q ?? "";
-  const timeRange = searchParams.timeRange ?? "all";
+  const categoryFilter = await getAllCategory();
+
+  const categoryOptions: DropdownOption[] = categoryFilter.map((c) => ({
+    value: c.slug ?? "",
+    label: c.name,
+    icon: c.icon ?? "mdi:tag",
+  }));
+
+  const page = Number(params.page ?? 1);
+  const sort = params.sort ?? "newest";
+  const category = params.category ?? "";
+  const query = params.q ?? "";
+  const timeRange = params.timeRange ?? "all";
 
   return (
     <>

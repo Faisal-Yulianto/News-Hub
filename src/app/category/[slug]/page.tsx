@@ -4,13 +4,13 @@ import Footer from "@/components/reusable/footer";
 import { CategoryNewsItem } from "@/hooks/use-category-news";
 
 type PageProps = {
-  params: { slug: string };
-  searchParams: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{
     page?: string;
     sort?: string;
     timeRange?: string;
     limit?: string;
-  };
+  }>;
 };
 
 async function fetchCategoryNews(
@@ -18,11 +18,11 @@ async function fetchCategoryNews(
   page: number,
   sort: string,
   timeRange: string,
-  limit: number
+  limit: number,
 ) {
   const res = await fetch(
     `${process.env.NEXTAUTH_URL}/api/all-news?category=${category}&page=${page}&limit=${limit}&sort=${sort}&timeRange=${timeRange}`,
-    { next: { revalidate: 60 } }
+    { next: { revalidate: 60 } },
   );
   if (!res.ok) return null;
   return res.json();
@@ -32,12 +32,14 @@ export async function generateMetadata({
   params,
   searchParams,
 }: PageProps): Promise<Metadata> {
-  const page = Number(searchParams.page ?? 1);
-  const sort = searchParams.sort ?? "newest";
-  const timeRange = searchParams.timeRange ?? "all";
-  const limit = Number(searchParams.limit ?? 10);
+  const { slug } = await params;
+  const searchParamsValue = await searchParams;
+  const page = Number(searchParamsValue.page ?? 1);
+  const sort = searchParamsValue.sort ?? "newest";
+  const timeRange = searchParamsValue.timeRange ?? "all";
+  const limit = Number(searchParamsValue.limit ?? 10);
 
-  const data = await fetchCategoryNews(params.slug, page, sort, timeRange, limit);
+  const data = await fetchCategoryNews(slug, page, sort, timeRange, limit);
 
   if (!data?.categoryInfo) {
     return {
@@ -61,8 +63,8 @@ export async function generateMetadata({
 
   const canonicalUrl =
     page === 1
-      ? `https://newshub.com/category/${params.slug}`
-      : `https://newshub.com/category/${params.slug}?page=${page}`;
+      ? `https://newshub.com/category/${slug}`
+      : `https://newshub.com/category/${slug}?page=${page}`;
 
   return {
     title,
@@ -114,13 +116,14 @@ export default async function CategoryPage({
   params,
   searchParams,
 }: PageProps) {
-  const category = params.slug;
-  const page = Number(searchParams.page ?? 1);
-  const sort = searchParams.sort ?? "newest";
-  const timeRange = searchParams.timeRange ?? "all";
-  const limit = Number(searchParams.limit ?? 10);
+  const { slug } = await params;
+  const searchParamsValue = await searchParams;
+  const page = Number(searchParamsValue.page ?? 1);
+  const sort = searchParamsValue.sort ?? "newest";
+  const timeRange = searchParamsValue.timeRange ?? "all";
+  const limit = Number(searchParamsValue.limit ?? 10);
 
-  const data = await fetchCategoryNews(category, page, sort, timeRange, limit);
+  const data = await fetchCategoryNews(slug, page, sort, timeRange, limit);
 
   if (!data?.categoryInfo) {
     return (
@@ -141,13 +144,13 @@ export default async function CategoryPage({
           rel="prev"
           href={
             page === 2
-              ? `/category/${category}`
-              : `/category/${category}?page=${page - 1}`
+              ? `/category/${slug}`
+              : `/category/${slug}?page=${page - 1}`
           }
         />
       )}
       {page < totalPages && (
-        <link rel="next" href={`/category/${category}?page=${page + 1}`} />
+        <link rel="next" href={`/category/${slug}?page=${page + 1}`} />
       )}
 
       <script
@@ -158,18 +161,20 @@ export default async function CategoryPage({
             "@type": "ItemList",
             name: `${data.categoryInfo.name} - Berita Terkini`,
             numberOfItems: data.total,
-            itemListElement: data.data.map((item: CategoryNewsItem, index: number) => ({
-              "@type": "ListItem",
-              position: (page - 1) * limit + index + 1,
-              item: {
-                "@type": "NewsArticle",
-                headline: item.title,
-                url: `https://newshub.com/news/${item.slug}`,
-                image: item.thumbnailUrl,
-                datePublished: item.publishedAt,
-                author: { "@type": "Person", name: item.author.name },
-              },
-            })),
+            itemListElement: data.data.map(
+              (item: CategoryNewsItem, index: number) => ({
+                "@type": "ListItem",
+                position: (page - 1) * limit + index + 1,
+                item: {
+                  "@type": "NewsArticle",
+                  headline: item.title,
+                  url: `https://newshub.com/news/${item.slug}`,
+                  image: item.thumbnailUrl,
+                  datePublished: item.publishedAt,
+                  author: { "@type": "Person", name: item.author.name },
+                },
+              }),
+            ),
           }),
         }}
       />
@@ -201,7 +206,7 @@ export default async function CategoryPage({
       <main className="min-h-screen bg-white text-black dark:bg-black dark:text-white font-sans py-10 mt-25 lg:mt-40 md:mt-30">
         <div className="w-[95%] mx-auto dark:bg-[#1a1a1a] dark:text-white p-8 rounded-md shadow-[0_10px_20px_rgba(0,0,0,0.25)]">
           <CategoryNews
-            category={category}
+            category={slug}
             page={page}
             sort={sort}
             timeRange={timeRange}

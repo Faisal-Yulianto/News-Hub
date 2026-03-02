@@ -4,6 +4,8 @@ import db from "./prisma";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import { loginIpLimiter, loginEmailLimiter } from "./rate-limit";
+import { headers } from "next/headers";
 
 declare module "next-auth" {
   interface Session {
@@ -37,27 +39,49 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email dan password harus diisi");
+          throw new Error("Email atau password salah");
         }
+
+        const email = credentials.email.toLowerCase().trim();
+
+        const headerList = await headers();
+
+        const forwarded = headerList.get("x-forwarded-for");
+        const ip = forwarded?.split(",")[0]?.trim() ?? "anonymous";
+        const ipLimit = await loginIpLimiter.limit(ip);
+        if (!ipLimit.success) {
+          throw new Error("Terlalu banyak percobaan login. Coba lagi nanti.");
+        }
+
+        const emailLimit = await loginEmailLimiter.limit(`login-${email}`);
+        if (!emailLimit.success) {
+          throw new Error("Terlalu banyak percobaan login. Coba lagi nanti.");
+        }
+
         const user = await db.user.findUnique({
-          where: { email: credentials.email },
+          where: { email },
         });
+
+        await new Promise((res) => setTimeout(res, 400));
+
         if (!user || !user.password) {
-          throw new Error("User tidak ditemukan");
+          throw new Error("Email atau password salah");
         }
+
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
-          user.password
+          user.password,
         );
 
         if (!isPasswordValid) {
-          throw new Error("Password salah");
+          throw new Error("Email atau password salah");
         }
 
         return {
           id: user.id,
           email: user.email,
           name: user.name,
+          role: user.role,
           avatar: user.avatar,
         };
       },

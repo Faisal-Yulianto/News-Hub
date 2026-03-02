@@ -69,6 +69,54 @@ export const historyClearLimiter = new Ratelimit({
   prefix: "ratelimit:history:clear",
 });
 
+export const registerLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(3, "10 m"),
+  analytics: true,
+  prefix: "ratelimit:register",
+});
+
+export const loginIpLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:login:ip",
+});
+
+export const loginEmailLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:login:email",
+});
+
+export const resetRequestIpLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:reset:ip",
+});
+
+export const resetRequestEmailLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(3, "10 m"),
+  analytics: true,
+  prefix: "ratelimit:reset:email",
+});
+
+export const forgotRequestIpLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:forgot:ip",
+});
+
+export const forgotRequestEmailLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(3, "10 m"),
+  analytics: true,
+  prefix: "ratelimit:forgot:email",
+});
 
 export async function checkRateLimit(
   limiter: Ratelimit,

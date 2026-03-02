@@ -20,14 +20,17 @@ export default function DropdownProfileMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="border-border-none outline-none ring-0 focus:ring-0 focus:outline-none active:outline-none mr-[-20] lg:mr-0">
-        <div className="bg-black dark:bg-white rounded-full w-[42px] h-[42px] flex items-center justify-center cursor-pointer overflow-hidden border-3 dark:border-white border-black">
-          <Image
-            src={user?.avatar || "/newshub.png"}
-            alt="User Profile"
-            width={35}
-            height={35}
-            className="bg-black rounded-full object-cover"
-          />
+        <div className="relative w-[35px] h-[35px] shrink-0">
+          <div className="relative w-full h-full rounded-full overflow-hidden ring-3 dark:ring-white ring-black">
+            <Image
+              src={user?.avatar || "/newshub.png"}
+              alt="User profile photo"
+              fill
+              sizes="200px"
+              className="object-cover"
+              priority
+            />
+          </div>
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -75,7 +78,8 @@ export default function DropdownProfileMenu() {
             <DropdownMenuItem className="cursor-pointer flex justify-end items-center py-1">
               <p className="text-[18px] font-semibold px-3">Sign In</p>
               <div className="dark:bg-white bg-black rounded-full w-[40px] h-[40px] flex items-center justify-center cursor-pointer">
-                <div className="bg-white
+                <div
+                  className="bg-white
               dark:bg-black rounded-full w-[35px] h-[35px] items-center flex justify-center"
                 >
                   <Icon

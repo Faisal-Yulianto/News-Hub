@@ -66,7 +66,7 @@ export default function UserHistory() {
     <section>
       <div className="border-b-2 dark:border-white p-2 font-extrabold text-lg mb-4 mt-10">
         <div className="flex justify-between">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center ">
             <Icon icon="material-symbols:history" width="30" height="30" />
             <h2>History</h2>
           </div>

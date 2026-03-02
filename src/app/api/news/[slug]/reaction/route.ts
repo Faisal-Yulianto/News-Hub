@@ -5,9 +5,10 @@ import { authOptions } from "@/lib/auth";
 
 export async function POST(
   req: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user?.id) {
@@ -28,7 +29,7 @@ export async function POST(
     const isLike = type === "like";
 
     const news = await prisma.news.findUnique({
-      where: { slug: params.slug },
+      where: { slug },
       select: { id: true },
     });
 
