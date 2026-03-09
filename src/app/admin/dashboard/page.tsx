@@ -1,7 +1,13 @@
+import { CardOverview } from "@/components/admin/card-overview";
+import { DailyAnalyticsChart } from "@/components/admin/daily-chart";
+import { TopPagesChart } from "@/components/admin/top-pages-chart";
+
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <h1 className="text-4xl font-bold">Admin Dashboard</h1>
-    </div>
+    <main className="flex flex-col gap-y-2">
+      <CardOverview />
+      <DailyAnalyticsChart />
+      <TopPagesChart />
+    </main>
   );
 }

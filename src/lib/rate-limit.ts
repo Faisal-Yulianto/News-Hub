@@ -118,6 +118,27 @@ export const forgotRequestEmailLimiter = new Ratelimit({
   prefix: "ratelimit:forgot:email",
 });
 
+export const visitCreateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(20, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:visit:create",
+});
+
+export const visitReadLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(60, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:visit:read",
+});
+
+export function getIdentifier(req: Request) {
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const ua = req.headers.get("user-agent") ?? "unknown";
+  return `${ip}:${ua}`;
+}
+
 export async function checkRateLimit(
   limiter: Ratelimit,
   identifier: string,

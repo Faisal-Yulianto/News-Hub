@@ -218,6 +218,21 @@ model CommentLike {
   @@index([userId])
 }
 
+model PageVisit {
+  id        Int      @id @default(autoincrement())
+  visitorId String
+  userId    String?
+  page      String
+  createdAt DateTime @default(now())
+  visitDate DateTime? @db.Date
+
+  @@index([createdAt])
+  @@index([visitDate])
+  @@index([page, createdAt])
+  @@index([visitorId])
+  @@index([visitorId, page])
+}
+
 model PasswordReset {
   id      String   @id @default(cuid())
   token   String   @unique
@@ -235,12 +250,15 @@ model VerificationToken {
 }
 
 enum Role {
+  ADMIN
   AUTHOR
   READER
 }
 
 enum NewsStatus {
   DRAFT
+  PENDING_REVIEW
   PUBLISHED
+  REJECTED
   ARCHIVED
 }

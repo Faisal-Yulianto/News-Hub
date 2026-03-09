@@ -55,7 +55,7 @@ export default function DropdownProfileMenu() {
             </div>
           </DropdownMenuItem>
         </Link>
-        {session?.user?.role === "AUTHOR" && (
+        {(session?.user?.role === "AUTHOR" || session?.user?.role === "ADMIN" )&& (
           <>
             <div className="border-t border-gray-700 my-3" />
             <Link href={"/admin/dashboard"}>

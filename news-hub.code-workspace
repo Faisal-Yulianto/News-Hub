@@ -5,6 +5,7 @@
 		}
 	],
 	"settings": {
-		"workbench.colorTheme": "Default Dark Modern"
+		"workbench.colorTheme": "Default Dark Modern",
+		"prisma.pinToPrisma6": true
 	}
 }
