@@ -82,6 +82,8 @@ model News {
   disLike         Int            @default(0)
   commentCount    Int            @default(0)
   publishedAt     DateTime?
+  rejectionReason String?
+  reviewedAt      DateTime?
   createdAt       DateTime       @default(now()) @map("created_at")
   updatedAt       DateTime       @updatedAt @map("updated_at")
   authorId        String
@@ -219,11 +221,11 @@ model CommentLike {
 }
 
 model PageVisit {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   visitorId String
   userId    String?
   page      String
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   visitDate DateTime? @db.Date
 
   @@index([createdAt])

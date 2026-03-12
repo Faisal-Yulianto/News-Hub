@@ -26,7 +26,7 @@ const menuItems = [
   },
   {
     label: "Manajemen Berita",
-    href: "/admin/articles",
+    href: "/admin/news",
     icon: "material-symbols:article",
   },
   {
