@@ -18,7 +18,7 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 
-const menuItems = [
+const adminItems = [
   {
     label: "Dashboard",
     href: "/admin/dashboard",
@@ -33,6 +33,34 @@ const menuItems = [
     label: "Manajemen User",
     href: "/admin/users",
     icon: "ph:user-list-fill",
+  },
+  {
+    label: "Halaman utama",
+    href: "/",
+    icon: "solar:home-bold",
+  },
+];
+
+const authorItems = [
+  {
+    label: "Dashboard",
+    href: "/admin/dashboard",
+    icon: "material-symbols:dashboard",
+  },
+  {
+    label: "Manajemen Berita",
+    href: "/admin/news",
+    icon: "material-symbols:article",
+  },
+  {
+    label: "Manajemen User",
+    href: "/admin/users",
+    icon: "ph:user-list-fill",
+  },
+  {
+    label: "Halaman utama",
+    href: "/",
+    icon: "solar:home-bold",
   },
 ];
 
@@ -54,22 +82,42 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip={item.label}
-                    isActive={pathname === item.href}
-                  >
-                    <Link href={item.href}>
-                      <Icon icon={item.icon}/>
-                      <span>{item.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
+            {session?.user?.role === "ADMIN" && (
+              <SidebarMenu>
+                {adminItems.map((item) => (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                      asChild
+                      tooltip={item.label}
+                      isActive={pathname === item.href}
+                    >
+                      <Link href={item.href}>
+                        <Icon icon={item.icon} />
+                        <span>{item.label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            )}
+            {session?.user?.role === "AUTHOR" && (
+              <SidebarMenu>
+                {authorItems.map((item) => (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                      asChild
+                      tooltip={item.label}
+                      isActive={pathname === item.href}
+                    >
+                      <Link href={item.href}>
+                        <Icon icon={item.icon} />
+                        <span>{item.label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            )}
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

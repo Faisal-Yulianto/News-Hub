@@ -49,7 +49,7 @@ export async function getOverviewAnalytics() {
   };
 }
 
-export async function getDailyVisitors(days: number) {
+export async function getDailyVisitors(days: number,limit=30) {
   const now = new Date();
   const since = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
 
@@ -66,8 +66,9 @@ export async function getDailyVisitors(days: number) {
       _all: true,
     },
     orderBy: {
-      visitDate: "asc",
+      visitDate: "desc",
     },
+    take: limit,
   });
 
   return result.map((item) => ({
@@ -75,6 +76,7 @@ export async function getDailyVisitors(days: number) {
     total: item._count._all,
   }));
 }
+
 export async function getTopPages(days: number, limit = 10) {
   const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 

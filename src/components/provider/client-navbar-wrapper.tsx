@@ -27,7 +27,9 @@ export default function ClientNavbarWrapper({ category, MoreCategory }: Props) {
     pathname === "/register" ||
     pathname === "/forgot-password" ||
     pathname === "/reset-password" ||
-    pathname.startsWith("/admin");
+    pathname === "/forbidden" ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/author")
 
   if (hideNavbar) return null;
 

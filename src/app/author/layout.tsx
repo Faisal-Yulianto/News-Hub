@@ -1,7 +1,7 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/header/sidebar";
 
-export default function AdminLayout({
+export default function AuthorLayout({
   children,
 }: {
   children: React.ReactNode;

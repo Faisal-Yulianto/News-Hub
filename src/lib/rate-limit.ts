@@ -153,6 +153,20 @@ export const adminNewsDeleteLimiter = new Ratelimit({
   prefix: "ratelimit:admin:news:delete",
 });
 
+export const adminUserReadLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(60, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:admin:user:read",
+});
+
+export const adminUserUpdateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(20, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:admin:user:update",
+});
+
 export function getIdentifier(req: Request) {
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
