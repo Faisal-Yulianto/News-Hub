@@ -167,6 +167,62 @@ export const adminUserUpdateLimiter = new Ratelimit({
   prefix: "ratelimit:admin:user:update",
 });
 
+export const authorDashboardLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(30, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:author:dashboard",
+});
+
+export const authorCategoryReadLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(60, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:author:category:read",
+});
+
+export const authorCategoryCreateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:author:category:create",
+});
+
+export const authorCategoryUpdateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(20, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:author:category:update",
+});
+
+export const authorCategoryDeleteLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:author:category:delete",
+});
+
+export const authorNewsCreateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:author:news:create",
+});
+
+export const authorUploadThumbnailLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:author:upload:thumbnail",
+});
+
+export const authorUploadContentImageLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(15, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:author:upload:content-image",
+});
+
 export function getIdentifier(req: Request) {
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";

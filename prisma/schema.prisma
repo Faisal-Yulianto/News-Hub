@@ -73,6 +73,7 @@ model News {
   content         String         @db.Text
   excerpt         String?
   thumbnailUrl    String
+  thumbnailHash   String?
   status          NewsStatus     @default(PUBLISHED)
   isBreaking      Boolean        @default(false)
   views           Int            @default(0)
@@ -152,6 +153,7 @@ model ViewLog {
 model ContentImage {
   id        String   @id @default(cuid())
   url       String
+  imageHash String?
   caption   String?
   newsId    String
   news      News     @relation(fields: [newsId], references: [id], onDelete: Cascade)
@@ -159,14 +161,14 @@ model ContentImage {
 }
 
 model Category {
-  id         String   @id @default(cuid())
-  name       String   @unique
-  slug       String?  @unique
-  icon       String?
-  news       News[]
-  createById String?
-  createBy   User?    @relation(fields: [createById], references: [id], onDelete: SetNull)
-  createdAt  DateTime @default(now()) @map("created_at")
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String?  @unique
+  icon        String?
+  news        News[]
+  createdById String?
+  createdBy   User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now()) @map("created_at")
 }
 
 model NewsLike {

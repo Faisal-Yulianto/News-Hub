@@ -44,13 +44,13 @@ const adminItems = [
 const authorItems = [
   {
     label: "Dashboard",
-    href: "/admin/dashboard",
+    href: "/author/dashboard",
     icon: "material-symbols:dashboard",
   },
   {
-    label: "Manajemen Berita",
-    href: "/admin/news",
-    icon: "material-symbols:article",
+    label: "Manajemen Kategori",
+    href: "/author/category",
+    icon: "material-symbols:category-outline",
   },
   {
     label: "Manajemen User",
