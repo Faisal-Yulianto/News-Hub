@@ -53,11 +53,16 @@ const authorItems = [
     icon: "material-symbols:category-outline",
   },
   {
-    label: "Manajemen User",
-    href: "/admin/users",
-    icon: "ph:user-list-fill",
+    label: "Buat Berita Baru",
+    href: "/author/create-news",
+    icon: "wpf:create-new",
   },
   {
+    label: "Manajemen Berita",
+    href: "/author/news-management",
+    icon: "streamline-logos:google-news-logo-solid",
+  },
+   {
     label: "Halaman utama",
     href: "/",
     icon: "solar:home-bold",

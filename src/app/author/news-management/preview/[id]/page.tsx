@@ -4,20 +4,22 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 import DOMPurify from "dompurify";
+import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { useAdminNewsDetail } from "@/hooks/admin/use-admin-detail";
-import { useUpdateNewsStatus } from "@/app/service/admin/update-status-news";
-import { toast } from "sonner";
-import Image from "next/image";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useNewsManagementDetail } from "@/hooks/author/use-detail-news";
+import { useDeleteNews } from "@/app/service/admin/delete-admin-news";
 
 const STATUS_MAP: Record<
   string,
@@ -41,50 +43,17 @@ function formatDate(date: string | null): string {
   });
 }
 
-export default function AdminArticleDetailPage() {
+export default function AuthorNewsPreviewPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const [rejectOpen, setRejectOpen] = useState(false);
-  const [rejectionReason, setRejectionReason] = useState("");
-  const [reasonError, setReasonError] = useState("");
-
-  const { data: news, isLoading, isError } = useAdminNewsDetail(id);
-
-  const { mutate: updateStatus, isPending } = useUpdateNewsStatus(id, {
+  const { data: news, isLoading, isError } = useNewsManagementDetail(id);
+  const { mutate: deleteNews, isPending: isDeleting } = useDeleteNews({
     onSuccess: () => {
-      toast.success(
-        rejectOpen
-          ? "Artikel berhasil ditolak"
-          : "Artikel berhasil dipublikasi",
-      );
-      router.push("/admin/news?status=PENDING_REVIEW");
-    },
-    onError: (error) => {
-      toast.error(error.message);
+      router.push("/author/news-management");
     },
   });
-
-  const handleApprove = () => {
-    updateStatus({ status: "PUBLISHED" });
-  };
-
-  const handleReject = () => {
-    if (!rejectionReason.trim()) {
-      setReasonError("Alasan penolakan wajib diisi");
-      return;
-    }
-    if (rejectionReason.trim().length < 10) {
-      setReasonError("Alasan penolakan minimal 10 karakter");
-      return;
-    }
-    setReasonError("");
-    updateStatus({
-      status: "REJECTED",
-      rejectionReason: rejectionReason.trim(),
-    });
-    setRejectOpen(false);
-  };
 
   if (isLoading) {
     return (
@@ -96,7 +65,6 @@ export default function AdminArticleDetailPage() {
       </div>
     );
   }
-
   if (isError || !news) {
     return (
       <div className="flex h-64 flex-col items-center justify-center gap-3">
@@ -116,14 +84,15 @@ export default function AdminArticleDetailPage() {
     label: news.status,
     variant: "outline" as const,
   };
+  const isDraft = news.status === "DRAFT";
+  const isRejected = news.status === "REJECTED";
   const isPublished = news.status === "PUBLISHED";
-  const isPendingReview = news.status === "PENDING_REVIEW";
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 pb-10">
       <Button
         variant="ghost"
-        onClick={() => router.push("/admin/news?status=PENDING_REVIEW")}
+        onClick={() => router.push("/author/news-management")}
         className="-ml-2"
       >
         <Icon icon="solar:arrow-left-linear" className="mr-1 h-4 w-4" />
@@ -150,6 +119,7 @@ export default function AdminArticleDetailPage() {
             {news.isBreaking && <Badge variant="destructive">Breaking</Badge>}
           </div>
         </div>
+
         <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
           <span className="font-medium text-foreground">
             {news.category.name}
@@ -167,52 +137,20 @@ export default function AdminArticleDetailPage() {
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-1.5">
               <Icon icon="solar:eye-linear" className="h-4 w-4" />
-              {news.views?.toLocaleString() ?? 0} views
+              {news.views.toLocaleString()} views
             </span>
             <span className="flex items-center gap-1.5">
               <Icon icon="solar:heart-linear" className="h-4 w-4" />
-              {news.likeCount?.toLocaleString() ?? 0} likes
+              {news.likeCount.toLocaleString()} likes
             </span>
             <span className="flex items-center gap-1.5">
               <Icon icon="solar:chat-line-linear" className="h-4 w-4" />
-              {news.commentCount?.toLocaleString() ?? 0} comments
+              {news.commentCount.toLocaleString()} comments
             </span>
           </div>
         )}
       </div>
-      {news.excerpt && (
-        <div className="rounded-lg bg-muted/30 p-4 border-l-4 border-primary">
-          <p className="text-sm font-medium text-muted-foreground mb-1 flex items-center gap-1.5">
-            <Icon icon="solar:notes-linear" className="h-4 w-4" />
-            Ringkasan Artikel
-          </p>
-          <p className="text-sm italic">{news.excerpt}</p>
-        </div>
-      )}
-
-      {(news.metaTitle || news.metaDescription) && (
-        <div className="rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/20 p-4 space-y-2">
-          <h3 className="text-sm font-semibold flex items-center">
-            <Icon icon="solar:seo-linear" className="h-4 w-4" />
-            Informasi SEO (Meta)
-          </h3>
-          {news.metaTitle && (
-            <div>
-              <p className="text-xs text-muted-foreground">Meta Title:</p>
-              <p className="text-sm font-medium break-words">
-                {news.metaTitle}
-              </p>
-            </div>
-          )}
-          {news.metaDescription && (
-            <div>
-              <p className="text-xs text-muted-foreground">Meta Description:</p>
-              <p className="text-sm break-words">{news.metaDescription}</p>
-            </div>
-          )}
-        </div>
-      )}
-      {news.contentImages && news.contentImages.length > 0 && (
+      {news.contentImages.length > 0 && (
         <div
           className={`grid gap-3 ${
             news.contentImages.length === 1
@@ -241,14 +179,13 @@ export default function AdminArticleDetailPage() {
           ))}
         </div>
       )}
-
       <div
         className="prose prose-neutral dark:prose-invert max-w-none rounded-lg border p-6"
         dangerouslySetInnerHTML={{
           __html: DOMPurify.sanitize(news.content),
         }}
       />
-      {news.status === "REJECTED" && news.rejectionReason && (
+      {isRejected && news.rejectionReason && (
         <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
           <div className="mb-2 flex items-center gap-2">
             <Icon
@@ -264,74 +201,54 @@ export default function AdminArticleDetailPage() {
           </p>
         </div>
       )}
-      {isPendingReview && (
+      {(isDraft || isRejected) && (
         <div className="flex items-center justify-end gap-3 rounded-lg border p-4">
-          <Button
-            variant="destructive"
-            onClick={() => setRejectOpen(true)}
-            disabled={isPending}
-          >
-            <Icon icon="solar:close-circle-linear" className="h-4 w-4" />
-            Tolak
+          <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
+            <Icon
+              icon="solar:trash-bin-trash-linear"
+              className="h-4 w-4"
+            />
+            Hapus
           </Button>
-          <Button onClick={handleApprove} disabled={isPending}>
-            <Icon icon="solar:check-circle-linear" className="h-4 w-4" />
-            {isPending ? "Memproses..." : "Setujui"}
-          </Button>
+          {isDraft && (
+            <Button asChild>
+              <Link href={`/author/news-management/edit/${news.id}`}>
+                <Icon icon="solar:pen-linear" className="h-4 w-4" />
+                Edit Draft
+              </Link>
+            </Button>
+          )}
         </div>
       )}
-
-      <Dialog open={rejectOpen} onOpenChange={setRejectOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Tolak Artikel</DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">
-              Berikan alasan penolakan untuk Berita{" "}
-              <span className="font-medium text-foreground">{news.title}</span>.
-              Alasan ini akan ditampilkan kepada author.
-            </p>
-            <Textarea
-              placeholder="Contoh: Konten tidak sesuai pedoman penulisan NewsHub..."
-              value={rejectionReason}
-              onChange={(e) => {
-                setRejectionReason(e.target.value);
-                if (reasonError) setReasonError("");
-              }}
-              rows={4}
-            />
-            {reasonError && (
-              <p className="text-xs text-destructive">{reasonError}</p>
-            )}
-            <p className="text-right text-xs text-muted-foreground">
-              {rejectionReason.length} karakter
-            </p>
-          </div>
-
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setRejectOpen(false);
-                setRejectionReason("");
-                setReasonError("");
-              }}
-              disabled={isPending}
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus berita?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tindakan ini tidak dapat dibatalkan. Berita akan dihapus secara
+              permanen dari database.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteNews(news.id)}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Batal
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleReject}
-              disabled={isPending}
-            >
-              {isPending ? "Memproses..." : "Tolak Artikel"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              {isDeleting ? (
+                <Icon
+                  icon="solar:spinner-bold"
+                  className="h-4 w-4 animate-spin"
+                />
+              ) : (
+                <Icon icon="solar:trash-bin-trash-bold" className="h-4 w-4" />
+              )}
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

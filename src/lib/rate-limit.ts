@@ -223,6 +223,27 @@ export const authorUploadContentImageLimiter = new Ratelimit({
   prefix: "ratelimit:author:upload:content-image",
 });
 
+export const authorNewsReadLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(60, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:author:news:read",
+});
+
+export const authorNewsDeleteLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:author:news:delete",
+});
+
+export const authorNewsUpdateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(20, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:author:news:update",
+});
+
 export function getIdentifier(req: Request) {
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";

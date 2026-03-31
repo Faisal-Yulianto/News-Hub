@@ -28,30 +28,57 @@ export async function GET(
     if (!id || typeof id !== "string") {
       return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     }
+
     const news = await prisma.news.findUnique({
       where: { id },
       select: {
         id: true,
         title: true,
+        slug: true, 
+        excerpt: true, 
         content: true,
         thumbnailUrl: true,
+        thumbnailHash: true, 
         status: true,
         isBreaking: true,
+        source: true, 
+        metaTitle: true, 
+        metaDescription: true, 
         rejectionReason: true,
         reviewedAt: true,
         publishedAt: true,
         createdAt: true,
+        views: true, 
+        likeCount: true, 
+        commentCount: true, 
         author: {
-          select: { name: true, avatar: true },
+          select: {
+            id: true, 
+            name: true,
+            avatar: true,
+          },
         },
         category: {
-          select: { name: true },
+          select: {
+            id: true,
+            name: true,
+            slug: true, 
+            icon: true, 
+          },
         },
         contentImages: {
-          select: { url: true },
+          select: {
+            id: true, 
+            url: true,
+            caption: true, 
+            imageHash: true,
+            createdAt: true, 
+          },
+          orderBy: { createdAt: "asc" },
         },
       },
     });
+
     if (!news) {
       return NextResponse.json({ error: "News not found" }, { status: 404 });
     }

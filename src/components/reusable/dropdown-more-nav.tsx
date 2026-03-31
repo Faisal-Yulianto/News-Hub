@@ -13,6 +13,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 type MoreCategoryItem = {
   id: string | number;
   name: string;
+  slug: string;
   icon: string | null;
 };
 
@@ -42,7 +43,7 @@ export default function DropdownNav({ MoreCategory }: NavbarProps) {
             {MoreCategory.map((item) => (
               <DropdownMenuItem key={item.id} asChild>
                 <Link
-                  href={`/category/${item.name}`}
+                  href={`/category/${item.slug}`}
                   className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition ${
                     pathname === `/category/${item.name}`
                       ? "bg-gray-900 text-white dark:bg-gray-400 dark:text-black"
