@@ -1,6 +1,6 @@
 import { UploadImageResult } from "./create-thumbnail";
 import { toast } from "sonner";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export interface UploadContentImagesResult {
   images: UploadImageResult[];
@@ -23,8 +23,23 @@ export async function uploadContentImagesService(
 }
 
 export function useUploadContentImages() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: uploadContentImagesService,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          "admin-news",
+          "all-news",
+          "category-news",
+          "breaking",
+          "trending",
+          "populer",
+          "related-news",
+        ],
+      });
+      toast.success("Gambar konten berhasil diupload");
+    },
     onError: (err: Error) => {
       toast.error(err.message || "Failed to upload content images");
     },

@@ -104,7 +104,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await requireAuth();
 
@@ -123,9 +123,10 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
         }
       );
     }
+    const { id } = await params;
 
     const category = await prisma.category.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: {
           select: { news: true },
@@ -142,7 +143,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     }
 
     await prisma.category.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return succesResponse({

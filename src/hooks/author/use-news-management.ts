@@ -23,7 +23,7 @@ export interface NewsManagementResponse {
   data: NewsManagementItem[];
   pagination: NewsManagementPagination;
 }
-export const NEWS_MANAGEMENT_QUERY_KEY = ["author", "news-management"];
+export const NEWS_MANAGEMENT_QUERY_KEY = ["author", "news-management","all-news","category-news","breaking","trending","populer","related-news"];
 
 export async function fetchNewsManagementService(params: {
   status: string;

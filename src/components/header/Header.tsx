@@ -2,14 +2,9 @@ import Image from "next/image";
 import DropdownProfileMenu from "@/components/reusable/Dropdown-profile-menu";
 import Navbar from "./Navbar";
 import Link from "next/link";
+import { MoreCategoryItem } from "./Navbar";
 
 type CategoryItem = {
-  id: string | number;
-  name: string;
-  icon: string | null;
-};
-
-type MoreCategoryItem = {
   id: string | number;
   name: string;
   icon: string | null;

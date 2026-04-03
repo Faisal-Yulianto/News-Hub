@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse} from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth-helper";
 import { handleApiEror } from "@/lib/api-helper";
@@ -119,7 +119,7 @@ export async function GET(req: Request) {
   });
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE() {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {

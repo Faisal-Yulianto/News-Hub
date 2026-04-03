@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import NProgress from "nprogress";
@@ -11,7 +12,7 @@ NProgress.configure({
   minimum: 0.25,
 });
 
-export default function RouteProgress() {
+function RouteProgressContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const searchParamsString = searchParams.toString();
@@ -43,4 +44,12 @@ export default function RouteProgress() {
   }, [pathname, searchParamsString]);
 
   return null;
+}
+
+export default function RouteProgress() {
+  return (
+    <Suspense fallback={null}>
+      <RouteProgressContent />
+    </Suspense>
+  );
 }

@@ -12,7 +12,7 @@ interface UseUpdateNewsStatusOptions {
 
 export function useUpdateNewsStatus(
   id: string,
-  options?: UseUpdateNewsStatusOptions
+  options?: UseUpdateNewsStatusOptions,
 ) {
   const queryClient = useQueryClient();
 
@@ -30,7 +30,17 @@ export function useUpdateNewsStatus(
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-news"] });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "admin-news",
+          "all-news",
+          "category-news",
+          "breaking",
+          "trending",
+          "populer",
+          "related-news",
+        ],
+      });
       queryClient.invalidateQueries({ queryKey: ["admin-news-detail", id] });
       options?.onSuccess?.();
     },

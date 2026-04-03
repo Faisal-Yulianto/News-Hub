@@ -1,3 +1,6 @@
+"use client";
+
+import { Suspense } from "react";
 import { DropdownSelect } from "@/components/reusable/dropdown-select";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { DropdownOption } from "@/app/search-news/page";
@@ -101,7 +104,7 @@ const CommentsortOptions = [
   },
 ] as const;
 
-export function Filter() {
+function FilterContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const filterBy = searchParams.get("timeRange");
@@ -126,7 +129,15 @@ export function Filter() {
   );
 }
 
-export function Sorting() {
+export function Filter() {
+  return (
+    <Suspense fallback={<div className="h-10 w-24 animate-pulse bg-muted rounded" />}>
+      <FilterContent />
+    </Suspense>
+  );
+}
+
+function SortingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orderBy = searchParams.get("sort");
@@ -151,7 +162,15 @@ export function Sorting() {
   );
 }
 
-export function CategoryFilter({ options }: CategoryFilterProps) {
+export function Sorting() {
+  return (
+    <Suspense fallback={<div className="h-10 w-24 animate-pulse bg-muted rounded" />}>
+      <SortingContent />
+    </Suspense>
+  );
+}
+
+function CategoryFilterContent({ options }: CategoryFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orderBy = searchParams.get("category");
@@ -173,6 +192,14 @@ export function CategoryFilter({ options }: CategoryFilterProps) {
       selected={orderBy}
       onChange={onChange}
     />
+  );
+}
+
+export function CategoryFilter({ options }: CategoryFilterProps) {
+  return (
+    <Suspense fallback={<div className="h-10 w-24 animate-pulse bg-muted rounded" />}>
+      <CategoryFilterContent options={options} />
+    </Suspense>
   );
 }
 

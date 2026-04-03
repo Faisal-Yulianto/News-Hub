@@ -12,11 +12,12 @@ type CategoryItem = {
   icon: string | null;
 };
 
-type MoreCategoryItem = {
+export interface MoreCategoryItem {
   id: string | number;
   name: string;
-  icon: string | null;
-};
+  slug: string 
+  icon: string 
+}
 
 type NavbarProps = {
   category: CategoryItem[];

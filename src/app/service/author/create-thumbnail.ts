@@ -1,5 +1,5 @@
 import { toast } from "sonner";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation,useQueryClient } from "@tanstack/react-query";
 
 export interface UploadImageResult {
   url: string;
@@ -34,8 +34,13 @@ export async function uploadThumbnailService(
 }
 
 export function useUploadThumbnail() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: uploadThumbnailService,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["author-create-news"] });
+      toast.success("Thumbnail berhasil diupload");
+    },
     onError: (err: Error) => {
       toast.error(err.message || "Failed to upload thumbnail");
     },

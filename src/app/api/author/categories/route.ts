@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import {  handleApiEror, succesResponse, errorResponse } from "@/lib/api-helper";
 import { requireAuth } from "@/lib/auth-helper";
 import { checkRateLimit, getRateLimitHeaders, getIdentifier, authorCategoryReadLimiter, authorCategoryCreateLimiter } from "@/lib/rate-limit";
+import { revalidatePath } from "next/cache";
 
 function generateSlug(name: string): string {
   return name
@@ -127,6 +128,7 @@ export async function POST(req: Request) {
         createdById: user.id,
       },
     });
+    revalidatePath("/"); 
 
     return succesResponse(category, 201);
   } catch (error) {

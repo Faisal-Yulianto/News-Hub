@@ -1,7 +1,8 @@
 import { CreateNewsFormValues } from "@/lib/validation/add-news-validation";
 import { CreatedNews } from "./create-thumbnail";
 import { toast } from "sonner";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation,useQueryClient } from "@tanstack/react-query";
+import { NEWS_MANAGEMENT_QUERY_KEY } from "@/hooks/author/use-news-management";
 
 export async function createNewsService(
   data: CreateNewsFormValues,
@@ -18,9 +19,11 @@ export async function createNewsService(
 }
 
 export function useCreateNews(onSuccess?: (slug: string) => void) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createNewsService,
     onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: NEWS_MANAGEMENT_QUERY_KEY });
       toast.success(
         data.status === "DRAFT"
           ? "Berita berhasil disimpan sebagai draft"
@@ -29,7 +32,7 @@ export function useCreateNews(onSuccess?: (slug: string) => void) {
       onSuccess?.(data.slug);
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Failed to create news");
+      toast.error(err.message || "Gagal membuat berita");
     },
   });
 }

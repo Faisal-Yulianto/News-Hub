@@ -2,14 +2,9 @@
 
 import { usePathname } from "next/navigation";
 import Header from "@/components/header/Header";
+import { MoreCategoryItem } from "../header/Navbar";
 
 type CategoryItem = {
-  id: string | number;
-  name: string;
-  icon: string | null;
-};
-
-type MoreCategoryItem = {
   id: string | number;
   name: string;
   icon: string | null;

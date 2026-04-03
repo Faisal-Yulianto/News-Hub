@@ -163,8 +163,8 @@ model ContentImage {
 model Category {
   id          String   @id @default(cuid())
   name        String   @unique
-  slug        String?  @unique
-  icon        String?
+  slug        String  @unique
+  icon        String
   news        News[]
   createdById String?
   createdBy   User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)

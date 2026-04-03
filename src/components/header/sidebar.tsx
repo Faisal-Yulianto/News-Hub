@@ -17,6 +17,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
+import ThemeToggle from "../reusable/dark-mode";
 
 const adminItems = [
   {
@@ -62,7 +63,7 @@ const authorItems = [
     href: "/author/news-management",
     icon: "streamline-logos:google-news-logo-solid",
   },
-   {
+  {
     label: "Halaman utama",
     href: "/",
     icon: "solar:home-bold",
@@ -126,6 +127,9 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <div className="p-2 overflow-hidden">
+        <ThemeToggle />
+      </div>
       <SidebarFooter className="border-t p-3">
         <div className="flex items-center gap-3">
           <Avatar className="h-8 w-8 shrink-0">

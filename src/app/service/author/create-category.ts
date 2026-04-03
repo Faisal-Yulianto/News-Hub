@@ -22,7 +22,7 @@ export async function createCategoryService(data: CategoryFormValues): Promise<C
   if (!res.ok) throw new Error(json.error || "Failed to create category");
   return json;
 }
-export const CATEGORIES_QUERY_KEY = ["author", "categories"];
+export const CATEGORIES_QUERY_KEY = ["author", "categories", "category-news"];
 
 export function useCreateCategory(onSuccess?: () => void) {
   const queryClient = useQueryClient();
@@ -31,11 +31,11 @@ export function useCreateCategory(onSuccess?: () => void) {
     mutationFn: createCategoryService,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CATEGORIES_QUERY_KEY });
-      toast.success("Category created successfully");
+      toast.success("Kategori berhasil dibuat");
       onSuccess?.();
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Failed to create category");
+      toast.error(err.message || "Gagal membuat kategori");
     },
   });
 }

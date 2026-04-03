@@ -167,6 +167,7 @@ export const adminUserUpdateLimiter = new Ratelimit({
   prefix: "ratelimit:admin:user:update",
 });
 
+
 export const authorDashboardLimiter = new Ratelimit({
   redis,
   limiter: Ratelimit.slidingWindow(30, "1 m"),
