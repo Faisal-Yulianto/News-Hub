@@ -19,6 +19,7 @@ export type DropdownOption = {
   label: string;
   icon?: string;
 };
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://news-hub-iota-silk.vercel.app";
 
 async function fetchSearchNews(
   query: string,
@@ -37,10 +38,9 @@ async function fetchSearchNews(
     ...(category && { category }),
   });
 
-  const res = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/all-news?${params}`,
-    { next: { revalidate: 60 } },
-  );
+  const res = await fetch(`${BASE_URL}/api/all-news?${params}`, {
+    next: { revalidate: 60 },
+  });
   if (!res.ok) return null;
   return res.json();
 }
@@ -60,7 +60,7 @@ export async function generateMetadata({
         "Cari berita terkini dari NewsHub. Temukan artikel trending, breaking news, dan berita terbaru dari Indonesia dan dunia.",
       robots: { index: true, follow: true },
       alternates: {
-        canonical: "https://newshub.com/search",
+        canonical: `${BASE_URL}/search-news`,
       },
     };
   }
@@ -89,7 +89,7 @@ export async function generateMetadata({
   const params = new URLSearchParams({ q: query });
   if (page > 1) params.set("page", String(page));
   if (category) params.set("category", category);
-  const canonicalUrl = `https://newshub.com/search?${params.toString()}`;
+  const canonicalUrl = `${BASE_URL}/search-news?${params.toString()}`;
 
   return {
     title,
@@ -103,7 +103,7 @@ export async function generateMetadata({
       description,
       images: [
         {
-          url: "/og-home.jpg",
+          url: `${BASE_URL}/newshub.png`,
           width: 1200,
           height: 630,
           alt: `Pencarian "${query}" - NewsHub`,
@@ -116,7 +116,7 @@ export async function generateMetadata({
       site: "@newshub",
       title,
       description,
-      images: { url: "/og-home.jpg" },
+      images: { url: `${BASE_URL}/newshub.png` },
     },
 
     alternates: {

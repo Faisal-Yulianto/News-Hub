@@ -19,6 +19,9 @@ interface Props {
   searchParams: Promise<{ page?: string }>;
 }
 
+const BASE_URL =
+  process.env.NEXT_PUBLIC_BASE_URL || "https://news-hub-iota-silk.vercel.app";
+
 export async function generateMetadata({
   searchParams,
 }: Props): Promise<Metadata> {
@@ -26,10 +29,9 @@ export async function generateMetadata({
     const params = await searchParams;
     const page = parseInt(params.page || "1");
 
-    const metadataRes = await fetch(
-      `${process.env.NEXTAUTH_URL}/api/news/metadata`,
-      { next: { revalidate: 60 } },
-    );
+    const metadataRes = await fetch(`${BASE_URL}/api/news/metadata`, {
+      next: { revalidate: 60 },
+    });
     const { latestBreaking, totalNews } = await metadataRes.json();
 
     const baseTitle =
@@ -50,8 +52,8 @@ export async function generateMetadata({
 
     const ogImage =
       page === 1
-        ? latestBreaking?.thumbnailUrl || "/og-home.jpg"
-        : "/og-home.jpg";
+        ? latestBreaking?.thumbnailUrl || `${BASE_URL}/newshub.png`
+        : `${BASE_URL}/newshub.png`;
 
     return {
       title: dynamicTitle,
@@ -59,10 +61,7 @@ export async function generateMetadata({
       openGraph: {
         type: "website",
         locale: "id_ID",
-        url:
-          page === 1
-            ? "https://newshub.com"
-            : `https://newshub.com?page=${page}`,
+        url: page === 1 ? BASE_URL : `${BASE_URL}?page=${page}`,
         siteName: "NewsHub",
         title: dynamicTitle,
         description: dynamicDescription,
@@ -75,10 +74,7 @@ export async function generateMetadata({
         images: { url: ogImage },
       },
       alternates: {
-        canonical:
-          page === 1
-            ? "https://newshub.com"
-            : `https://newshub.com?page=${page}`,
+        canonical: page === 1 ? BASE_URL : `${BASE_URL}?page=${page}`,
       },
       robots: {
         index: true,
@@ -102,17 +98,18 @@ export async function generateMetadata({
 export default async function Home({ searchParams }: Props) {
   const params = await searchParams;
   const currentPage = parseInt(params.page || "1");
+
   const [TrendingRes, PopulerRes, BreakingRes, AllNewsRes] = await Promise.all([
-    fetch(`${process.env.NEXTAUTH_URL}/api/news?type=trending`, {
+    fetch(`${BASE_URL}/api/news?type=trending`, {
       next: { revalidate: 60 },
     }),
-    fetch(`${process.env.NEXTAUTH_URL}/api/news?type=populer`, {
+    fetch(`${BASE_URL}/api/news?type=populer`, {
       next: { revalidate: 60 },
     }),
-    fetch(`${process.env.NEXTAUTH_URL}/api/news?type=breaking`, {
+    fetch(`${BASE_URL}/api/news?type=breaking`, {
       next: { revalidate: 30 },
     }),
-    fetch(`${process.env.NEXTAUTH_URL}/api/news?page=${currentPage}&limit=20`, {
+    fetch(`${BASE_URL}/api/news?page=${currentPage}&limit=20`, {
       next: { revalidate: 60 },
     }),
   ]);
@@ -133,15 +130,14 @@ export default async function Home({ searchParams }: Props) {
             "@context": "https://schema.org",
             "@type": "WebSite",
             name: "NewsHub",
-            url: "https://newshub.com",
+            url: BASE_URL,
             description:
               "Portal berita terpercaya untuk berita terkini dan breaking news Indonesia",
             potentialAction: {
               "@type": "SearchAction",
               target: {
                 "@type": "EntryPoint",
-                urlTemplate:
-                  "https://newshub.com/search?q={search_term_string}",
+                urlTemplate: `${BASE_URL}/search-news?q={search_term_string}`,
               },
               "query-input": "required name=search_term_string",
             },
@@ -150,7 +146,7 @@ export default async function Home({ searchParams }: Props) {
               name: "NewsHub",
               logo: {
                 "@type": "ImageObject",
-                url: "https://newshub.com/logo.png",
+                url: `${BASE_URL}/newshub.png`,
               },
             },
           }),
@@ -172,7 +168,7 @@ export default async function Home({ searchParams }: Props) {
                   item: {
                     "@type": "NewsArticle",
                     headline: item.title,
-                    url: `https://newshub.com/news/${item.slug}`,
+                    url: `${BASE_URL}/news/${item.slug}`,
                     image: item.thumbnailUrl,
                     datePublished: item.publishedAt,
                     author: { "@type": "Person", name: item.author.name },
@@ -200,12 +196,12 @@ export default async function Home({ searchParams }: Props) {
                 name: "NewsHub",
                 logo: {
                   "@type": "ImageObject",
-                  url: "https://newshub.com/logo.png",
+                  url: `${BASE_URL}/newshub.png`,
                 },
               },
               mainEntityOfPage: {
                 "@type": "WebPage",
-                "@id": `https://newshub.com/news/${latestBreaking.slug}`,
+                "@id": `${BASE_URL}/news/${latestBreaking.slug}`,
               },
             }),
           }}

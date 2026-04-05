@@ -13,9 +13,11 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://news-hub-iota-silk.vercel.app";
+
 async function fetchDetailNews(slug: string) {
   const res = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/news/${slug}`,
+    `${BASE_URL}/api/news/${slug}`,
     { next: { revalidate: 60 } }
   );
   if (!res.ok) return null;
@@ -50,7 +52,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       type: "article",
       locale: "id_ID",
-      url: `https://newshub.com/news/${data.slug}`,
+      url: `${BASE_URL}/news/${data.slug}`,
       siteName: "NewsHub",
       title: metaTitle,
       description: metaDescription,
@@ -76,7 +78,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       images: [{ url: data.thumbnailUrl, alt: metaTitle }],
     },
     alternates: {
-      canonical: `https://newshub.com/news/${data.slug}`,
+      canonical: `${BASE_URL}/news/${data.slug}`,
     },
 
     robots: {
@@ -104,10 +106,10 @@ export default async function DetailNews({ params }: PageProps) {
   const { slug } = await params;
   const DetailNews = slug;
   const [res, RelatedRes] = await Promise.all([
-    fetch(`${process.env.NEXTAUTH_URL}/api/news/${DetailNews}`, {
+    fetch(`${BASE_URL}/api/news/${DetailNews}`, {
       next: { revalidate: 60 },
     }),
-    fetch(`${process.env.NEXTAUTH_URL}/api/news/${DetailNews}/related`, {
+    fetch(`${BASE_URL}/api/news/${DetailNews}/related`, {
       next: { revalidate: 60 },
     }),
   ]);
@@ -141,12 +143,12 @@ export default async function DetailNews({ params }: PageProps) {
               name: "NewsHub",
               logo: {
                 "@type": "ImageObject",
-                url: "https://newshub.com/logo.png",
+                url: `${BASE_URL}/logo.png`,
               },
             },
             mainEntityOfPage: {
               "@type": "WebPage",
-              "@id": `https://newshub.com/news/${data.slug}`,
+              "@id": `${BASE_URL}/news/${data.slug}`,
             },
             articleSection: data.category?.name,
             wordCount: data.content?.replace(/<[^>]*>/g, "").split(/\s+/).length,
@@ -181,7 +183,7 @@ export default async function DetailNews({ params }: PageProps) {
                 "@type": "ListItem",
                 position: 1,
                 name: "Home",
-                item: "https://newshub.com",
+                item: BASE_URL,
               },
               ...(data.category
                 ? [
@@ -189,7 +191,7 @@ export default async function DetailNews({ params }: PageProps) {
                       "@type": "ListItem",
                       position: 2,
                       name: data.category.name,
-                      item: `https://newshub.com/category/${data.category.slug}`,
+                      item: `${BASE_URL}/category/${data.category.slug}`,
                     },
                   ]
                 : []),
@@ -197,7 +199,7 @@ export default async function DetailNews({ params }: PageProps) {
                 "@type": "ListItem",
                 position: data.category ? 3 : 2,
                 name: data.title,
-                item: `https://newshub.com/news/${data.slug}`,
+                item: `${BASE_URL}/news/${data.slug}`,
               },
             ],
           }),

@@ -13,6 +13,8 @@ type PageProps = {
   }>;
 };
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://news-hub-iota-silk.vercel.app";
+
 async function fetchCategoryNews(
   category: string,
   page: number,
@@ -21,7 +23,7 @@ async function fetchCategoryNews(
   limit: number,
 ) {
   const res = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/all-news?category=${category}&page=${page}&limit=${limit}&sort=${sort}&timeRange=${timeRange}`,
+    `${BASE_URL}/api/all-news?category=${category}&page=${page}&limit=${limit}&sort=${sort}&timeRange=${timeRange}`,
     { next: { revalidate: 60 } },
   );
   if (!res.ok) return null;
@@ -63,8 +65,8 @@ export async function generateMetadata({
 
   const canonicalUrl =
     page === 1
-      ? `https://newshub.com/category/${slug}`
-      : `https://newshub.com/category/${slug}?page=${page}`;
+      ? `${BASE_URL}/category/${slug}`
+      : `${BASE_URL}/category/${slug}?page=${page}`;
 
   return {
     title,
@@ -79,7 +81,7 @@ export async function generateMetadata({
       description,
       images: [
         {
-          url: "/og-home.jpg",
+          url: `${BASE_URL}/newshub.png`,
           width: 1200,
           height: 630,
           alt: `${categoryName} - NewsHub`,
@@ -92,7 +94,7 @@ export async function generateMetadata({
       site: "@newshub",
       title,
       description,
-      images: { url: "/og-home.jpg" },
+      images: { url: `${BASE_URL}/newshub.png` },
     },
 
     alternates: {
@@ -144,13 +146,13 @@ export default async function CategoryPage({
           rel="prev"
           href={
             page === 2
-              ? `/category/${slug}`
-              : `/category/${slug}?page=${page - 1}`
+              ? `${BASE_URL}/category/${slug}`
+              : `${BASE_URL}/category/${slug}?page=${page - 1}`
           }
         />
       )}
       {page < totalPages && (
-        <link rel="next" href={`/category/${slug}?page=${page + 1}`} />
+        <link rel="next" href={`${BASE_URL}/category/${slug}?page=${page + 1}`} />
       )}
 
       <script
@@ -168,7 +170,7 @@ export default async function CategoryPage({
                 item: {
                   "@type": "NewsArticle",
                   headline: item.title,
-                  url: `https://newshub.com/news/${item.slug}`,
+                  url: `${BASE_URL}/news/${item.slug}`,
                   image: item.thumbnailUrl,
                   datePublished: item.publishedAt,
                   author: { "@type": "Person", name: item.author.name },
@@ -190,13 +192,13 @@ export default async function CategoryPage({
                 "@type": "ListItem",
                 position: 1,
                 name: "Home",
-                item: "https://newshub.com",
+                item: BASE_URL,
               },
               {
                 "@type": "ListItem",
                 position: 2,
                 name: data.categoryInfo.name,
-                item: `https://newshub.com/category/${data.categoryInfo.slug}`,
+                item: `${BASE_URL}/category/${data.categoryInfo.slug}`,
               },
             ],
           }),

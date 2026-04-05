@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import prisma from "@/lib/prisma";
 
-const BASE_URL = "https://newshub.com";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://news-hub-iota-silk.vercel.app";
 
 type SitemapEntry = {
   url: string;
@@ -28,12 +28,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changefreq: "daily",
       priority: 1,
-    },
-    {
-      url: `${BASE_URL}/search`,
-      lastModified: new Date(),
-      changefreq: "daily",
-      priority: 0.5,
     },
   ];
 
