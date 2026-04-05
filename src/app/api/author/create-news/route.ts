@@ -8,9 +8,8 @@ import {
   getIdentifier,
   authorNewsCreateLimiter,
 } from "@/lib/rate-limit";
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
 import { createNewsSchema } from "@/lib/validation/add-news-validation";
-
 
 function generateSlug(title: string): string {
   return title
@@ -47,12 +46,12 @@ export async function POST(req: NextRequest) {
     const identifier = getIdentifier(req);
     const rateLimitResult = await checkRateLimit(
       authorNewsCreateLimiter,
-      identifier
+      identifier,
     );
     if (!rateLimitResult.success) {
       return NextResponse.json(
         { error: "Too many requests" },
-        { status: 429, headers: getRateLimitHeaders(rateLimitResult) }
+        { status: 429, headers: getRateLimitHeaders(rateLimitResult) },
       );
     }
 
@@ -60,11 +59,7 @@ export async function POST(req: NextRequest) {
     const parsed = createNewsSchema.safeParse(body);
 
     if (!parsed.success) {
-      return errorResponse(
-        parsed.error.message,
-        400,
-        "VALIDATION_ERROR"
-      );
+      return errorResponse(parsed.error.message, 400, "VALIDATION_ERROR");
     }
 
     const {
@@ -82,16 +77,39 @@ export async function POST(req: NextRequest) {
       status,
     } = parsed.data;
 
-    const sanitizedContent = DOMPurify.sanitize(content, {
-      ALLOWED_TAGS: [
-        "p", "br", "strong", "em", "u", "s", "h1", "h2", "h3", "h4",
-        "ul", "ol", "li", "blockquote", "a", "img", "code", "pre",
+    const sanitizedContent = sanitizeHtml(content, {
+      allowedTags: [
+        "p",
+        "br",
+        "strong",
+        "em",
+        "u",
+        "s",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "ul",
+        "ol",
+        "li",
+        "blockquote",
+        "a",
+        "img",
+        "code",
+        "pre",
       ],
-      ALLOWED_ATTR: ["href", "src", "alt", "target", "rel", "class"],
+      allowedAttributes: {
+        a: ["href", "target", "rel"],
+        img: ["src", "alt", "width", "height"],
+      },
     });
 
     if (!sanitizedContent || sanitizedContent.trim().length < 10) {
-      return errorResponse("Content is too short or invalid", 400, "VALIDATION_ERROR");
+      return errorResponse(
+        "Content is too short or invalid",
+        400,
+        "VALIDATION_ERROR",
+      );
     }
     const category = await prisma.category.findUnique({
       where: { id: categoryId },
@@ -136,7 +154,10 @@ export async function POST(req: NextRequest) {
       return created;
     });
 
-    return succesResponse({ id: news.id, slug: news.slug, status: news.status }, 201);
+    return succesResponse(
+      { id: news.id, slug: news.slug, status: news.status },
+      201,
+    );
   } catch (error) {
     return handleApiEror(error);
   }

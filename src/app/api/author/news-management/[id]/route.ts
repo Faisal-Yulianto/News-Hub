@@ -11,7 +11,7 @@ import {
   authorNewsDeleteLimiter,
 } from "@/lib/rate-limit";
 import { NewsStatus } from "@prisma/client";
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
 import { updateNewsSchema } from "@/lib/validation/update-news-shema";
 function generateSlug(title: string): string {
   return title
@@ -182,8 +182,8 @@ export async function PATCH(
       status,
     } = parsed.data;
 
-    const sanitizedContent = DOMPurify.sanitize(content, {
-      ALLOWED_TAGS: [
+    const sanitizedContent = sanitizeHtml(content, {
+      allowedTags: [
         "p",
         "br",
         "strong",
@@ -203,7 +203,10 @@ export async function PATCH(
         "code",
         "pre",
       ],
-      ALLOWED_ATTR: ["href", "src", "alt", "target", "rel", "class"],
+      allowedAttributes: {
+        a: ["href", "target", "rel"],
+        img: ["src", "alt", "width", "height"],
+      },
     });
 
     if (!sanitizedContent || sanitizedContent.trim().length < 10) {
