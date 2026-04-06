@@ -34,6 +34,13 @@ export const updateCommentLimiter = new Ratelimit({
   prefix: "ratelimit:comment:update",
 });
 
+export const deleteCommentLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, "1 m"), 
+  analytics: true,
+  prefix: "ratelimit:comment:delete",
+});
+
 export const likeLimiter = new Ratelimit({
   redis,
   limiter: Ratelimit.slidingWindow(30, "1 m"),
