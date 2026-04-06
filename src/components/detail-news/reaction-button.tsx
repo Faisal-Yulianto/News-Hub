@@ -75,7 +75,9 @@ export function LikeButton({ slug, initialData }: detailNewsProps) {
 
   return (
     <>
-      <div className="flex justify-center items-center gap-x-10 h-15 shadow-md shadow-black/20 rounded-md lg:w-2xl mx-auto">
+      <div
+        className="flex flex-wrap justify-center items-center gap-5 sm:gap-x-8 lg:gap-x-10 gap-y-3 px-2 py-3 mx-auto w-full max-w-2xl shadow-md shadow-black/20 rounded-md"
+      >
         <div className="flex gap-2 items-center">
           <button
             disabled={mutation.isPending}

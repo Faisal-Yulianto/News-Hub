@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { Loader2, X, Check } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState, useRef, useEffect } from "react";
+import { Loader2, X, Check } from "lucide-react";
+import { toast } from "sonner";
 
 interface CommentEditFormProps {
   initialContent: string;
@@ -22,8 +22,9 @@ export function CommentEditForm({
 
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height =
+        textareaRef.current.scrollHeight + "px";
     }
   }, [content]);
 
@@ -32,7 +33,7 @@ export function CommentEditForm({
       textareaRef.current.focus();
       textareaRef.current.setSelectionRange(
         textareaRef.current.value.length,
-        textareaRef.current.value.length
+        textareaRef.current.value.length,
       );
     }
   }, []);
@@ -43,7 +44,7 @@ export function CommentEditForm({
     const trimmedContent = content.trim();
     if (!trimmedContent || isSubmitting) return;
     if (trimmedContent === initialContent.trim()) {
-      toast.info('Tidak ada perubahan terdeteksi');
+      toast.info("Tidak ada perubahan terdeteksi");
       onCancel();
       return;
     }
@@ -52,11 +53,11 @@ export function CommentEditForm({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
       handleSubmit(e as unknown as React.FormEvent);
     }
 
-    if (e.key === 'Escape') {
+    if (e.key === "Escape") {
       onCancel();
     }
   };
@@ -76,19 +77,21 @@ export function CommentEditForm({
           rows={1}
           disabled={isSubmitting}
           className="
-            w-full resize-none rounded-lg border border-gray-300 px-4 py-2.5
-            text-sm placeholder:text-gray-400
+            w-full resize-none rounded-lg border border-gray-300 
+            px-3 sm:px-4 py-2 sm:py-2.5
+            text-xs sm:text-sm placeholder:text-gray-400
             focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20
             disabled:bg-gray-100 disabled:cursor-not-allowed
-            min-h-[42px] max-h-[200px]
+            min-h-[40px] sm:min-h-[42px] max-h-[200px]
             transition-colors
+            text-black dark:text-white
           "
         />
-        <div className="mt-1 flex items-center justify-between text-xs">
+        <div className="mt-1 flex flex-wrap items-center justify-between gap-1 text-[11px] sm:text-xs">
           <span
             className={`
-              ${content.length > 1900 ? 'text-orange-600 font-medium' : 'text-gray-500'}
-              ${content.length >= 2000 ? 'text-red-600 font-semibold' : ''}
+              ${content.length > 1900 ? "text-orange-600 font-medium" : "text-gray-500"}
+              ${content.length >= 2000 ? "text-red-600 font-semibold" : ""}
             `}
           >
             {content.length > 0 && (
@@ -103,32 +106,37 @@ export function CommentEditForm({
               </>
             )}
           </span>
-          <span className="text-gray-400">
+          <span className="text-gray-400 hidden sm:inline">
             Ctrl+Enter untuk merubah • Esc untuk batal
           </span>
+          <span className="text-gray-400 sm:hidden">⌘/Ctrl+Enter • Esc</span>
         </div>
       </div>
 
-      <div className="flex items-center justify-end gap-2">
+      <div className="flex items-center justify-end gap-2 sm:gap-3">
         <button
           type="button"
           onClick={onCancel}
           disabled={isSubmitting}
           className="
-            inline-flex items-center gap-2 px-4 py-2 text-sm font-medium
+            inline-flex items-center gap-1 sm:gap-2 
+            px-3 sm:px-4 py-1.5 sm:py-2 
+            text-xs sm:text-sm font-medium
             text-gray-700 hover:bg-gray-100 rounded-lg
             transition-colors disabled:opacity-50 disabled:cursor-not-allowed
           "
         >
-          <X className="h-4 w-4" />
-          batal
+          <X className="h-3 w-3 sm:h-4 sm:w-4" />
+          <span>Batal</span>
         </button>
 
         <button
           type="submit"
           disabled={!content.trim() || !hasChanges || isSubmitting}
           className="
-            inline-flex items-center gap-2 px-4 py-2 text-sm font-medium
+            inline-flex items-center gap-1 sm:gap-2 
+            px-3 sm:px-5 py-1.5 sm:py-2 
+            text-xs sm:text-sm font-medium
             text-white bg-blue-600 rounded-lg
             hover:bg-blue-700 active:bg-blue-800
             transition-colors disabled:opacity-50 disabled:cursor-not-allowed
@@ -137,13 +145,13 @@ export function CommentEditForm({
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Menyimpan...
+              <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
+              <span>Menyimpan...</span>
             </>
           ) : (
             <>
-              <Check className="h-4 w-4" />
-              Simpan
+              <Check className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span>Simpan</span>
             </>
           )}
         </button>

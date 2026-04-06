@@ -57,7 +57,7 @@ export function useCreateComment(newsId: string) {
 
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['all-comment', newsId],
+        queryKey: ['all-comment', newsId,],
       });
 
       if (variables.parentId) {

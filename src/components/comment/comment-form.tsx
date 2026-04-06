@@ -69,8 +69,8 @@ export function CommentForm({
 
   if (!session) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-center">
-        <p className="text-sm text-gray-600">
+      <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 sm:p-4 text-center">
+        <p className="text-xs sm:text-sm text-gray-600">
           Harap{" "}
           <button className="text-blue-600 hover:underline font-medium">
             log in terlebih dahulu
@@ -82,26 +82,28 @@ export function CommentForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3 ">
-      <div className="flex items-start gap-3">
-        <div className="relative w-[40px] h-[40px] shrink-0">
+    <form onSubmit={handleSubmit} className="space-y-3">
+      <div className="flex items-start gap-2 sm:gap-3">
+        <div className="relative w-8 h-8 sm:w-10 sm:h-10 shrink-0">
           <div className="relative w-full h-full rounded-full overflow-hidden dark:ring-white">
             <Image
               src={userProfile?.avatar || "/newshub.png"}
               alt="User profile photo"
               fill
-              sizes="230px"
+              sizes="(max-width: 640px) 32px, 40px"
               className="object-cover"
               priority
             />
           </div>
         </div>
-        <div className="flex-1">
+
+        <div className="flex-1 min-w-0">
           {parentAuthorName && (
-            <div className="mb-2 text-sm text-gray-600">
+            <div className="mb-2 text-xs sm:text-sm text-gray-600">
               Balas ke <span className="font-semibold">{parentAuthorName}</span>
             </div>
           )}
+
           <textarea
             ref={textareaRef}
             value={content}
@@ -112,16 +114,18 @@ export function CommentForm({
             rows={1}
             disabled={isSubmitting}
             className="
-              w-full resize-none rounded-lg border border-gray-300 px-4 py-2.5
-              text-sm placeholder:text-gray-400
+              w-full resize-none rounded-lg border border-gray-300 
+              px-3 sm:px-4 py-2 sm:py-2.5
+              text-xs sm:text-sm placeholder:text-gray-400
               focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20
               disabled:bg-gray-100 disabled:cursor-not-allowed
-              min-h-[42px] max-h-[200px]
-              transition-
+              min-h-[40px] sm:min-h-[42px] max-h-[200px]
+              transition-colors
               text-black dark:text-white
             "
           />
-          <div className="mt-1 flex items-center justify-between text-xs text-gray-500">
+
+          <div className="mt-1 flex flex-wrap items-center justify-between gap-1 text-[11px] sm:text-xs text-gray-500">
             <span>
               {content.length > 0 && (
                 <>
@@ -134,26 +138,30 @@ export function CommentForm({
                 </>
               )}
             </span>
-            <span className="text-gray-400">
-              Ctrl+Enter untuk mengirim • Esc untuk batal
+            <span className="text-gray-400 hidden sm:inline">
+              Ctrl+Enter • Esc batal
             </span>
+            <span className="text-gray-400 sm:hidden">⌘/Ctrl+Enter</span>
           </div>
         </div>
       </div>
-      <div className="flex items-center justify-end gap-2 pl-[52px]">
+
+      <div className="flex items-center justify-end gap-2 sm:gap-3">
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
             disabled={isSubmitting}
             className="
-              inline-flex items-center gap-2 px-4 py-2 text-sm font-medium
+              inline-flex items-center gap-1 sm:gap-2 
+              px-3 sm:px-4 py-1.5 sm:py-2 
+              text-xs sm:text-sm font-medium
               text-gray-700 hover:bg-gray-100 rounded-lg
               transition-colors disabled:opacity-50 disabled:cursor-not-allowed
             "
           >
-            <X className="h-4 w-4" />
-            Batal
+            <X className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span>Batal</span>
           </button>
         )}
 
@@ -161,7 +169,9 @@ export function CommentForm({
           type="submit"
           disabled={!content.trim() || isSubmitting}
           className="
-            inline-flex items-center gap-2 px-4 py-2 text-sm font-medium
+            inline-flex items-center gap-1 sm:gap-2 
+            px-3 sm:px-5 py-1.5 sm:py-2 
+            text-xs sm:text-sm font-medium
             text-white bg-blue-600 rounded-lg
             hover:bg-blue-700 active:bg-blue-800
             transition-colors disabled:opacity-50 disabled:cursor-not-allowed
@@ -170,13 +180,13 @@ export function CommentForm({
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Mengirim...
+              <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
+              <span>Mengirim...</span>
             </>
           ) : (
             <>
-              <Send className="h-4 w-4" />
-              {submitLabel}
+              <Send className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span>{submitLabel}</span>
             </>
           )}
         </button>

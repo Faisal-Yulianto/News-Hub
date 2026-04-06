@@ -34,16 +34,30 @@ export default function CommentSection({ newsId }: allCommentProps) {
       content,
     });
   };
+
   return (
-    <section className="m-auto w-[80%] py-4 px-10 shadow-md shadow-black/20 rounded-sm">
+    <section className="
+      w-full 
+      max-w-4xl 
+      mx-auto 
+      px-4 sm:px-6 md:px-8 lg:px-10 
+      py-4 sm:py-6 
+      shadow-md shadow-black/20 
+      rounded-sm
+    ">
       {isLoading && (
-        <>
-          <Icon icon="eos-icons:bubble-loading" width={30} className="m-auto" />
-        </>
+        <Icon icon="eos-icons:bubble-loading" width={30} className="m-auto" />
       )}
+
       {!isLoading && (
         <>
-          <div className="px-6 py-4  bg-gray-50 dark:bg-black/10 rounded-md my-2">
+          <div className="
+            px-4 sm:px-6 
+            py-3 sm:py-4 
+            bg-gray-50 dark:bg-black/10 
+            rounded-md 
+            my-2 sm:my-3
+          ">
             <CommentForm
               newsId={newsId}
               onSubmit={handleCreateComment}
@@ -52,13 +66,17 @@ export default function CommentSection({ newsId }: allCommentProps) {
               submitLabel="Kirim Komentar"
             />
           </div>
-          <p className="text-sm">
+
+          <p className="text-xs sm:text-sm">
             {items[0]?.news.commentCount || "0"} Komentar
           </p>
+
           <div className="border-b-2 border-black dark:border-white my-2" />
+
           <div className="flex flex-col justify-end items-end mb-2">
             <CommentSorting />
           </div>
+
           {items.map((comment) => (
             <CommentItemDisplay
               key={comment.id}
@@ -69,18 +87,28 @@ export default function CommentSection({ newsId }: allCommentProps) {
           ))}
         </>
       )}
+
       {isEmpty && (
-        <div className="w-full text-center py-10 text-muted-foreground text-sm">
+        <div className="w-full text-center py-8 sm:py-10 text-muted-foreground text-xs sm:text-sm">
           <h2>Belum ada komentar saat ini.</h2>
         </div>
       )}
+
       {isFetchingNextPage && (
-        <div className="w-full flex flex-wrap justify-center gap-2">
+        <div className="w-full flex flex-wrap justify-center gap-2 sm:gap-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-30 md:h-30 w-full lg:w-[49.0%]" />
+            <Skeleton 
+              key={i} 
+              className="
+                h-32 
+                w-full 
+                lg:w-[49%]
+              " 
+            />
           ))}
         </div>
       )}
+
       <div ref={ref} style={{ height: 1 }} />
     </section>
   );

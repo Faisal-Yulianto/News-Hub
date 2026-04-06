@@ -60,9 +60,8 @@ export function CommentItemDisplay({
 
   const replies = repliesData?.replies || [];
 
-  const indentLevel = Math.min(depth, 5);
-  const indent = indentLevel * 40;
   const maxDepth = 5;
+  const clampedDepth = Math.min(depth, maxDepth); 
 
   const handleToggleReplies = () => {
     setShowReplies(!showReplies);
@@ -81,7 +80,7 @@ export function CommentItemDisplay({
           setShowReplies(true);
           refetchReplies();
         },
-      },
+      }
     );
   };
 
@@ -96,7 +95,7 @@ export function CommentItemDisplay({
         onSuccess: () => {
           setIsEditing(false);
         },
-      },
+      }
     );
   };
 
@@ -118,34 +117,40 @@ export function CommentItemDisplay({
         onSuccess: () => {
           setShowDeleteModal(false);
         },
-      },
+      }
     );
   };
 
   return (
     <>
       <div
-        className="py-4 px-2 rounded-sm transition-colors hover:bg-gray-100 dark:hover:bg-black/20 group"
-        style={{ marginLeft: `${indent}px` }}
+        className="py-2 sm:py-3 px-2 sm:px-3 rounded-sm transition-colors hover:bg-gray-100 dark:hover:bg-black/20 group"
+        style={
+          {
+            "--depth": clampedDepth,
+            marginLeft: `calc(20px * var(--depth))`,
+          } as React.CSSProperties
+        }
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="flex items-start gap-3">
-          <div className="relative w-[40px] h-[40px] shrink-0">
+        <div className="flex items-start gap-2 sm:gap-3">
+          <div className="relative w-8 h-8 sm:w-10 sm:h-10 shrink-0">
             <div className="relative w-full h-full rounded-full overflow-hidden dark:ring-white">
               <Image
                 src={comment.user.avatar || "/newshub.png"}
                 alt="User profile photo"
                 fill
-                sizes="230px"
+                sizes="(max-width: 640px) 32px, 40px"
                 className="object-cover"
                 priority
               />
             </div>
           </div>
+
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-2 mb-1">
-              <div className="flex items-center gap-2 text-sm">
+            <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 mb-1">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm">
                 <span className="font-semibold text-gray-900 dark:text-white">
                   {comment.user.name || "Anonymous"}
                 </span>
@@ -165,11 +170,11 @@ export function CommentItemDisplay({
                 <div className="relative">
                   <button
                     onClick={() => setShowMenu(!showMenu)}
-                    className={`p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-all ${
+                    className={`p-1 sm:p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-all ${
                       isHovered || showMenu ? "opacity-100" : "opacity-0"
                     }`}
                   >
-                    <MoreVertical className="h-4 w-4 text-gray-500" />
+                    <MoreVertical className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
                   </button>
                   {showMenu && (
                     <>
@@ -177,15 +182,15 @@ export function CommentItemDisplay({
                         className="fixed inset-0 z-10"
                         onClick={() => setShowMenu(false)}
                       />
-                      <div className="absolute right-0 top-full mt-1 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-20">
+                      <div className="absolute right-0 top-full mt-1 w-36 sm:w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-20">
                         <button
                           onClick={() => {
                             setIsEditing(true);
                             setShowMenu(false);
                           }}
-                          className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                          className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                         >
-                          <Edit2 className="h-4 w-4" />
+                          <Edit2 className="h-3 w-3 sm:h-4 sm:w-4" />
                           Edit
                         </button>
                         <button
@@ -193,9 +198,9 @@ export function CommentItemDisplay({
                             setShowMenu(false);
                             handleDeleteClick();
                           }}
-                          className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
+                          className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                           Hapus
                         </button>
                       </div>
@@ -215,7 +220,7 @@ export function CommentItemDisplay({
               </div>
             ) : (
               <p
-                className={`text-sm whitespace-pre-wrap break-words mb-2 ${
+                className={`text-xs sm:text-sm whitespace-pre-wrap break-words mb-2 ${
                   isDeleted
                     ? "italic text-gray-400"
                     : "text-gray-800 dark:text-gray-200"
@@ -224,8 +229,9 @@ export function CommentItemDisplay({
                 {comment.content}
               </p>
             )}
+
             {!isDeleted && !isEditing && (
-              <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                 <LikeButton
                   commentId={comment.id}
                   newsId={comment.newsId}
@@ -235,9 +241,9 @@ export function CommentItemDisplay({
                 {depth < maxDepth && (
                   <button
                     onClick={() => setShowReplyForm(!showReplyForm)}
-                    className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 transition-colors"
+                    className="flex items-center gap-1 text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 transition-colors"
                   >
-                    <MessageCircle className="h-4 w-4" />
+                    <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4" />
                     Balas
                   </button>
                 )}
@@ -245,21 +251,21 @@ export function CommentItemDisplay({
                   <button
                     onClick={handleToggleReplies}
                     disabled={isLoadingReplies}
-                    className="flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-1 text-xs sm:text-sm text-blue-600 hover:text-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isLoadingReplies ? (
                       <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
                         Loading...
                       </>
                     ) : showReplies ? (
                       <>
-                        <ChevronUp className="h-4 w-4" />
+                        <ChevronUp className="h-3 w-3 sm:h-4 sm:w-4" />
                         Sembunyikan
                       </>
                     ) : (
                       <>
-                        <ChevronDown className="h-4 w-4" />
+                        <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4" />
                         {comment.replyCount} Balasan
                       </>
                     )}
@@ -267,6 +273,7 @@ export function CommentItemDisplay({
                 )}
               </div>
             )}
+
             {showReplyForm && !isDeleted && !isEditing && depth < maxDepth && (
               <div className="mt-3">
                 <CommentForm
@@ -282,8 +289,9 @@ export function CommentItemDisplay({
                 />
               </div>
             )}
+
             {isErrorReplies && showReplies && (
-              <div className="mt-2 text-sm text-red-600">
+              <div className="mt-2 text-xs sm:text-sm text-red-600">
                 Gagal menampilkan reply.{" "}
                 <button
                   onClick={() => refetchReplies()}

@@ -29,19 +29,20 @@ export default function HeroSection({ news }: HeroSectionProps) {
   return (
     <div className="m-auto">
       <div className="flex flex-col pb-5 gap-y-4">
-        <h1 className="text-3xl font-bold text-center">{news.title}</h1>
+        <h1 className="lg:text-3xl md:text-2xl text-30 font-bold text-center">
+          {news.title}
+        </h1>
 
-        <div className="flex justify-center gap-x-1">
-          <p className="text-sm text-gray-500 font-bold dark:text-white">
+        <div className="flex justify-center gap-x-0.5 sm:gap-x-1 flex-wrap items-center">
+          <p className="text-xs sm:text-sm text-gray-500 font-bold dark:text-white">
             {news.author.name}
           </p>
           {news.source && (
-            <p className="text-sm font-bold">
+            <p className="text-xs sm:text-sm font-bold">
               {" - " + extractDomain(news.source)}
             </p>
           )}
         </div>
-
         <p className="text-center text-[12px] text-gray-500 mt-[-12px]">
           {formatDateTimeWIB(news.publishedAt)}
         </p>

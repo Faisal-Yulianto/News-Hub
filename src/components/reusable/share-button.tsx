@@ -89,9 +89,9 @@ export default function ShareButton({ title, slug }: ShareButtonProps) {
 
       <button
         onClick={shareToTwitter}
-        className="p-1 rounded bg-blue-500 text-white"
+        className="p-1 rounded bg-black text-white"
       >
-        <Icon icon="mdi:twitter" width={22} />
+        <Icon icon="prime:twitter" width={22} />
       </button>
     </div>
   );
