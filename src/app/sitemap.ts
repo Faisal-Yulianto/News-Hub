@@ -1,6 +1,8 @@
 import { MetadataRoute } from "next";
 import prisma from "@/lib/prisma";
 
+export const dynamic = 'force-dynamic'; 
+
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://news-hub-iota-silk.vercel.app";
 
 type SitemapEntry = {
