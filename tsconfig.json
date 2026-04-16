@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/api/search-news", "src/app/api/history", "next-sitemap.config.ts.bak"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/api/search-news", "src/app/api/history", "next-sitemap.config.ts", "src/app/sitemap.ts.bak"],
   "exclude": ["node_modules"]
 }
