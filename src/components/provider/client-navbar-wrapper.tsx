@@ -23,6 +23,7 @@ export default function ClientNavbarWrapper({ category, MoreCategory }: Props) {
     pathname === "/forgot-password" ||
     pathname === "/reset-password" ||
     pathname === "/forbidden" ||
+    pathname === "not-found" ||
     pathname.startsWith("/admin") ||
     pathname.startsWith("/author")
 

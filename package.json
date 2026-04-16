@@ -9,7 +9,7 @@
     "lint": "eslint",
     "seed": "prisma db seed",
     "reply": "tsx prisma/reply.ts",
-    "postbuild": "tsx node_modules/.bin/next-sitemap"
+    "postbuild": "next-sitemap"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
