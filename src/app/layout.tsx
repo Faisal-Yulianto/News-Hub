@@ -21,33 +21,38 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://news-hub-iota-silk.vercel.app"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL || "https://news-hub-iota-silk.vercel.app",
+  ),
   title: {
-    template: '%s | NewsHub',
-    default: 'NewsHub - Berita Terkini Indonesia',
+    template: "%s | NewsHub",
+    default: "NewsHub - Berita Terkini Indonesia",
   },
-  description: 'Portal berita terpercaya untuk berita terkini, trending, dan breaking news Indonesia.',
+  description:
+    "Portal berita terpercaya untuk berita terkini, trending, dan breaking news Indonesia.",
   openGraph: {
-    title: 'NewsHub - Berita Terkini Indonesia',
-    description: 'Portal berita terpercaya untuk berita terkini, trending, dan breaking news Indonesia.',
-    url: '/',
-    siteName: 'NewsHub',
+    title: "NewsHub - Berita Terkini Indonesia",
+    description:
+      "Portal berita terpercaya untuk berita terkini, trending, dan breaking news Indonesia.",
+    url: "/",
+    siteName: "NewsHub",
     images: [
       {
-        url: '/newshub.png',
+        url: "/newshub.png",
         width: 1200,
         height: 630,
-        alt: 'NewsHub',
+        alt: "NewsHub",
       },
     ],
-    locale: 'id_ID',
-    type: 'website',
+    locale: "id_ID",
+    type: "website",
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'NewsHub - Berita Terkini Indonesia',
-    description: 'Portal berita terpercaya untuk berita terkini, trending, dan breaking news Indonesia.',
-    images: ['/newshub.png'],
+    card: "summary_large_image",
+    title: "NewsHub - Berita Terkini Indonesia",
+    description:
+      "Portal berita terpercaya untuk berita terkini, trending, dan breaking news Indonesia.",
+    images: ["/newshub.png"],
   },
   robots: {
     index: true,
@@ -56,14 +61,14 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
   maximumScale: 5,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#000000' },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
   ],
-}
+};
 
 export default async function RootLayout({
   children,
@@ -91,6 +96,27 @@ export default async function RootLayout({
             </SessionProviderWrapper>
           </QueryProvider>
         </ThemeProvider>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "NewsHub",
+              alternateName: "NewsHub Indonesia",
+              url: "https://news-hub-iota-silk.vercel.app",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: {
+                  "@type": "EntryPoint",
+                  urlTemplate:
+                    "https://news-hub-iota-silk.vercel.app/search-news?q={search_term_string}",
+                },
+                "query-input": "required name=search_term_string",
+              },
+            }),
+          }}
+        />
       </body>
     </html>
   );
